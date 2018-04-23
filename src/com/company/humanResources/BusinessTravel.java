@@ -1,24 +1,33 @@
 package com.company.humanResources;
 
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+
 public final class BusinessTravel {
     private int compensation;
-    private int daysCount;
+    private LocalDate beginTravel;
+    private LocalDate endTravel;
     private String description;
     private String destination;
 
     private final static int DEFAULT_COMPENSATION = 0;
-    private final static int DEFAULT_DAYS_COUNT = 0;
+    private final static LocalDate DEFAULT_BEGIN_TRAVEL = LocalDate.now();
+    private final static LocalDate DEFAULT_END_TRAVEL = LocalDate.now().plusDays(1);
     private final static String DEFAULT_DESCRIPTION = "";
     private final static String DEFAULT_DESTINATION = "";
 
 
     public BusinessTravel(){
-        this (DEFAULT_COMPENSATION, DEFAULT_DAYS_COUNT, DEFAULT_DESCRIPTION, DEFAULT_DESTINATION);
+        this (DEFAULT_COMPENSATION, DEFAULT_BEGIN_TRAVEL, DEFAULT_END_TRAVEL, DEFAULT_DESCRIPTION, DEFAULT_DESTINATION);
     }
 
-    public BusinessTravel(int compensation, int daysCount, String description, String destination){
+    public BusinessTravel(int compensation, LocalDate beginTravel, LocalDate endTravel, String description, String destination){
+        if(endTravel.isBefore(beginTravel) && compensation < 0)
+            throw new IllegalArgumentException("Дата завершения командировки раньше даты начала и сумма компенсации\n" +
+                    "меньше 0");
         this.compensation = compensation;
-        this.daysCount = daysCount;
+        this.beginTravel = beginTravel;
+        this.endTravel = endTravel;
         this.description = description;
         this.destination = destination;
     }
@@ -27,8 +36,12 @@ public final class BusinessTravel {
         return compensation;
     }
 
-    public int getDaysCount() {
-        return daysCount;
+    public LocalDate getBeginTravel() {
+        return beginTravel;
+    }
+
+    public LocalDate getEndTravel() {
+        return endTravel;
     }
 
     public String getDescription() {
@@ -39,9 +52,14 @@ public final class BusinessTravel {
         return destination;
     }
 
+    public int getDaysCount(){
+        return (int) ChronoUnit.DAYS.between(this.beginTravel, this.endTravel);
+    }
+
     @Override
     public String toString(){
-        StringBuilder res = new StringBuilder();
+        String res = String.format("%s %tF – %tF (%d). %s", destination, beginTravel, endTravel, compensation, description);
+        /*StringBuilder res = new StringBuilder();
         if (destination != null)
             res.append(destination).append(" ");
         if (daysCount != 0)
@@ -49,8 +67,8 @@ public final class BusinessTravel {
         if (compensation != 0)
             res.append("(").append(compensation).append(").").append(" ");
         if (description != null)
-            res.append(description);
-        return res.toString();
+            res.append(description);*/
+        return res;
     }
 
     @Override
@@ -58,13 +76,13 @@ public final class BusinessTravel {
         if (this == obj) return true;
         if (!(obj instanceof BusinessTravel)) return false;
         BusinessTravel businessTravel = (BusinessTravel) obj;
-        return this.compensation == businessTravel.getCompensation() && this.daysCount == businessTravel.getDaysCount()
+        return this.compensation == businessTravel.getCompensation() && this.beginTravel.equals(businessTravel.getBeginTravel()) && this.endTravel.equals(businessTravel.getEndTravel())
                 && this.destination.equals(businessTravel.getDestination()) && this.description.equals(businessTravel.getDescription());
     }
 
     @Override
     public int hashCode(){
-        int hash = compensation ^ daysCount ^ description.hashCode() ^ destination.hashCode();
+        int hash = compensation ^ beginTravel.hashCode() ^ endTravel.hashCode() ^ description.hashCode() ^ destination.hashCode();
         return hash;
     }
 }

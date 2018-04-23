@@ -6,20 +6,22 @@ public abstract class Employee {
     private JobTitleEnum jobTitle;
     private int salary;
 
-    /*private static final String DEFAULT_NAME = null; //""
-    private static final String DEFAULT_SURNAME = null; // ""*/
+    private static final String DEFAULT_NAME = "";
+    private static final String DEFAULT_SURNAME = "";
     private static final JobTitleEnum DEFAULT_JOB_TITLE = JobTitleEnum.NONE; //""
     private static final int DEFAULT_SALARY = 0;
 
-    /*public Employee(){//???
+    public Employee(){
         this (DEFAULT_NAME, DEFAULT_SURNAME, DEFAULT_JOB_TITLE, DEFAULT_SALARY);
-    }*/
+    }
 
     protected Employee(String name, String surname){
         this (name, surname, DEFAULT_JOB_TITLE, DEFAULT_SALARY);
    }
 
     protected Employee(String name, String surname, JobTitleEnum jobTitle, int salary){
+        if(salary < 0)
+            throw new IllegalArgumentException("Передано отрицательное значение заработной платы");
         this.name = name;
         this.surname = surname;
         this.jobTitle = jobTitle;
@@ -64,7 +66,8 @@ public abstract class Employee {
 
     @Override
     public String toString(){
-        StringBuilder res = new StringBuilder();
+        String res = String.format("%s %s, %s, %dр.", surname, name, jobTitle.toString(), salary);
+        /*StringBuilder res = new StringBuilder();
         if (surname != null)
             res.append(surname).append(" ");
         if (name != null)
@@ -72,8 +75,8 @@ public abstract class Employee {
         if (jobTitle != JobTitleEnum.NONE)
             res.append(jobTitle.toString()).append(" ");
         if (salary != 0)
-            res.append(salary).append("р.");
-        return res.toString();
+            res.append(salary).append("р.");*/
+        return res;
     }
 
     @Override

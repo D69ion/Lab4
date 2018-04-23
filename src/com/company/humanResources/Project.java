@@ -1,5 +1,7 @@
 package com.company.humanResources;
 
+import java.time.LocalDate;
+
 public class Project implements EmployeeGroup{
     private String name;
     private List employeesList;
@@ -43,6 +45,59 @@ public class Project implements EmployeeGroup{
         Employee[] employees = getEmployees();
         QSort(employees, 0, employees.length - 1);
         return employees;
+    }
+
+    @Override
+    public int getPartTimeEmployeeQuantity() {
+        Employee[] employees = getEmployees();
+        int res = 0;
+        for(int i = 0; i < this.size; i++){
+            if(employees[i] instanceof PartTimeEmployee){
+                res++;
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getStaffEmployeeQuantity() {
+        Employee[] employees = getEmployees();
+        int res = 0;
+        for(int i = 0; i < this.size; i++){
+            if(employees[i] instanceof StaffEmployee){
+                res++;
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getCurrentTravellersQuantity() {
+        Employee[] employees = getEmployees();
+        int res = 0;
+        for(int i = 0; i < this.size; i++){
+            if(employees[i] instanceof PartTimeEmployee){
+                if(((StaffEmployee)(employees[i])).isTravelNow()){
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate) {
+        Employee[] employees = getEmployees();
+        Employee[] res = new Employee[getStaffEmployeeQuantity()];
+        int count = -1;
+        for(int i = 0; i < this.size; i++){
+            if(employees[i] instanceof PartTimeEmployee){
+                if(((StaffEmployee)(employees[i])).getTravelDaysQuantityFromTimeLapse(startDate,endDate) > 0){
+                    res[++count] = employees[i];
+                }
+            }
+        }
+        return res;
     }
 
     public void addEmployee(Employee employee) {

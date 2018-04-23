@@ -1,5 +1,7 @@
 package com.company.humanResources;
 
+import java.time.LocalDate;
+
 public interface GroupsManager {
     void addGroup(EmployeeGroup employeeGroup);
     int getGroupQuantity();
@@ -11,4 +13,8 @@ public interface GroupsManager {
     int getEmployees(JobTitleEnum jobTitle);
     Employee employeeWithMaxSalary();
     EmployeeGroup getEmployeesGroup(String name, String surname);
+    int getPartTimeEmployeeQuantity();
+    int getStaffEmployeeQuantity();
+    int getCurrentTravellersQuantity();
+    Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate);
 }

@@ -1,5 +1,8 @@
 package com.company.humanResources;
 
+import java.time.*;
+import java.time.temporal.ChronoUnit;
+
 public class StaffEmployee extends Employee implements BusinessTraveller{
     private int bonus;
     private List businessTravelList;
@@ -48,6 +51,27 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
         if(businessTravelList.length == 0)
             return null;
         return businessTravelList.toArray();
+    }
+
+    @Override
+    public boolean isTravelNow() {
+        BusinessTravel[] businessTravels = getTravels();
+        BusinessTravel businessTravel = businessTravels[businessTravels.length - 1];
+        return LocalDate.now().isAfter(businessTravel.getBeginTravel()) && LocalDate.now().isBefore(businessTravel.getEndTravel());
+    }
+
+    @Override
+    public int getTravelDaysQuantityFromTimeLapse(LocalDate startDate, LocalDate endDate) {
+        BusinessTravel[] businessTravels = getTravels();
+        for(int i = 0; i < this.businessTravelList.length; i++){
+            if(startDate.isAfter(businessTravels[i].getBeginTravel()) && endDate.isBefore(businessTravels[i].getEndTravel()))
+                return (int)ChronoUnit.DAYS.between(startDate, endDate);
+            if(startDate.isAfter(businessTravels[i].getBeginTravel())&& startDate.isBefore(businessTravels[i].getEndTravel()) && endDate.isAfter(businessTravels[i].getEndTravel()))
+                return (int)ChronoUnit.DAYS.between(startDate, businessTravels[i].getEndTravel());
+            if(endDate.isAfter(businessTravels[i].getBeginTravel())&& endDate.isBefore(businessTravels[i].getEndTravel()) && startDate.isBefore(businessTravels[i].getBeginTravel()))
+                return (int) ChronoUnit.DAYS.between(businessTravels[i].getBeginTravel(), endDate);
+        }
+        return 0;
     }
 
     @Override

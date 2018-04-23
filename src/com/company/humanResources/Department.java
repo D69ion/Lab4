@@ -1,5 +1,7 @@
 package com.company.humanResources;
 
+import java.time.LocalDate;
+
 public class Department implements EmployeeGroup{
     private String name;
     private Employee[] employees;
@@ -13,7 +15,11 @@ public class Department implements EmployeeGroup{
 	}
 
     public Department(String name, int size){
-        this(name, new Employee[size]);
+        if(size < 0)
+            throw new NegativeSizeException("Передана отрицательная длина массива");
+        this.name = name;
+        this.size = size;
+        this.employees = new Employee[this.size];
     }
 
     public Department(String name, Employee[] employees){
@@ -169,6 +175,55 @@ public class Department implements EmployeeGroup{
         Employee[] resEmployees = getEmployees();
         QSort(resEmployees, 0, resEmployees.length - 1);
         return resEmployees;
+    }
+
+    @Override
+    public int getPartTimeEmployeeQuantity() {
+        int res = 0;
+        for(int i = 0; i < this.size; i++){
+            if(this.employees[i] instanceof PartTimeEmployee){
+                res++;
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getStaffEmployeeQuantity() {
+        int res = 0;
+        for(int i = 0; i < this.size; i++){
+            if(this.employees[i] instanceof StaffEmployee){
+                res++;
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getCurrentTravellersQuantity() {
+        int res = 0;
+        for(int i = 0; i < this.size; i++){
+            if(this.employees[i] instanceof PartTimeEmployee){
+                if(((StaffEmployee)(this.employees[i])).isTravelNow()){
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate) {
+        Employee[] res = new Employee[getStaffEmployeeQuantity()];
+        int count = -1;
+        for(int i = 0; i < this.size; i++){
+            if(this.employees[i] instanceof PartTimeEmployee){
+                if(((StaffEmployee)(this.employees[i])).getTravelDaysQuantityFromTimeLapse(startDate, endDate) > 0){
+                    res[++count] = this.employees[i];
+                }
+            }
+        }
+        return res;
     }
 
     public JobTitleEnum[] getJobTitles(){

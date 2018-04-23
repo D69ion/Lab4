@@ -1,5 +1,7 @@
 package com.company.humanResources;
 
+import java.time.LocalDate;
+
 public class DepartmentsManager implements GroupsManager{
     private String name;
     private EmployeeGroup[] groups;
@@ -10,6 +12,14 @@ public class DepartmentsManager implements GroupsManager{
 
     public DepartmentsManager(String name){
         this(name, new Department[DEFAULT_SIZE]);
+    }
+
+    public DepartmentsManager(String name, int size){
+        if(size < 0)
+            throw new NegativeSizeException("Передана отрицательная длина массива");
+        this.name = name;
+        this.groups = new EmployeeGroup[size];
+        this.size = size;
     }
 
     public DepartmentsManager(String name, Department[] groups){
@@ -179,5 +189,70 @@ public class DepartmentsManager implements GroupsManager{
             }
         }
         return null;
+    }
+
+    @Override
+    public int getPartTimeEmployeeQuantity() {
+        Employee[] employees;
+        int res = 0;
+        for(int i = 0; i < this.size; i++) {
+            employees = this.groups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof PartTimeEmployee) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getStaffEmployeeQuantity() {
+        Employee[] employees;
+        int res = 0;
+        for(int i = 0; i < this.size; i++) {
+            employees = this.groups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof StaffEmployee) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getCurrentTravellersQuantity() {
+        Employee[] employees;
+        int res = 0;
+        for(int i = 0; i < this.size; i++) {
+            employees = this.groups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof PartTimeEmployee) {
+                    if (((StaffEmployee) (employees[j])).isTravelNow()) {
+                        res++;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate) {
+        Employee[] res = new Employee[getStaffEmployeeQuantity()];
+        Employee[] employees;
+        int count = -1;
+        for(int i = 0; i < this.size; i++) {
+            employees = this.groups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof PartTimeEmployee) {
+                    if (((StaffEmployee) (employees[j])).getTravelDaysQuantityFromTimeLapse(startDate, endDate) > 0) {
+                        res[++count] = employees[j];
+                    }
+                }
+            }
+        }
+        return res;
     }
 }

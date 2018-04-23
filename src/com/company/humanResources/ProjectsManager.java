@@ -1,5 +1,7 @@
 package com.company.humanResources;
 
+import java.time.LocalDate;
+
 public class ProjectsManager implements GroupsManager{
     private List groups;
     private int size;
@@ -121,6 +123,76 @@ public class ProjectsManager implements GroupsManager{
         }
         return null;
     }
+
+    @Override
+    public int getPartTimeEmployeeQuantity() {
+        EmployeeGroup[] employeeGroups = getGroups();
+        Employee[] employees;
+        int res = 0;
+        for(int i = 0; i < this.size; i++) {
+            employees = employeeGroups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof PartTimeEmployee) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getStaffEmployeeQuantity() {
+        EmployeeGroup[] employeeGroups = getGroups();
+        Employee[] employees;
+        int res = 0;
+        for(int i = 0; i < this.size; i++) {
+            employees = employeeGroups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof StaffEmployee) {
+                    res++;
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public int getCurrentTravellersQuantity() {
+        EmployeeGroup[] employeeGroups = getGroups();
+        Employee[] employees;
+        int res = 0;
+        for(int i = 0; i < this.size; i++) {
+            employees = employeeGroups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof PartTimeEmployee) {
+                    if (((StaffEmployee) (employees[j])).isTravelNow()) {
+                        res++;
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate) {
+        EmployeeGroup[] employeeGroups = getGroups();
+        Employee[] res = new Employee[getStaffEmployeeQuantity()];
+        Employee[] employees;
+        int count = -1;
+        for(int i = 0; i < this.size; i++) {
+            employees = employeeGroups[i].getEmployees();
+            for (int j = 0; j < this.size; j++) {
+                if (employees[j] instanceof PartTimeEmployee) {
+                    if (((StaffEmployee) (employees[j])).getTravelDaysQuantityFromTimeLapse(startDate, endDate) > 0) {
+                        res[++count] = employees[j];
+                    }
+                }
+            }
+        }
+        return res;
+    }
+
 
     private class ListElement {
         ListElement next;

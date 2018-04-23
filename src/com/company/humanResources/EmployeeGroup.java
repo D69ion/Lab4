@@ -1,5 +1,7 @@
 package com.company.humanResources;
 
+import java.time.LocalDate;
+
 public interface EmployeeGroup{
     String getName();
     void setName(String groupName);
@@ -11,6 +13,10 @@ public interface EmployeeGroup{
     int getSize();
     Employee[] getEmployees();
     Employee[] getSortedEmployees();
+    int getPartTimeEmployeeQuantity();
+    int getStaffEmployeeQuantity();
+    int getCurrentTravellersQuantity();
+    Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate);
     String toString();
     boolean equals(Object obj);
     int hashCode();
