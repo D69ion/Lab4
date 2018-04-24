@@ -43,16 +43,11 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
 
     @Override
     public void addTravel(BusinessTravel travel) throws IllegalDatesException{
-        try{
             BusinessTravel[] businessTravels = getTravels();
-            for(int i = 0; i < this.businessTravelList.length; i++){
-                if(getTravelDaysQuantityFromTimeLapse(travel.getBeginTravel(), travel.getEndTravel()) < 0)
+            for(int i = 0; i < this.businessTravelList.length; i++) {
+                if (travel.getBeginTravel().isAfter(businessTravels[i].getEndTravel()) || travel.getEndTravel().isBefore(businessTravels[i].getBeginTravel()))
                     throw new IllegalDatesException("Добавляемая командировка пересекается с другими командировками");
             }
-        }
-        catch (IllegalDatesException e){
-
-        }
         businessTravelList.addLast(travel);
     }
 
