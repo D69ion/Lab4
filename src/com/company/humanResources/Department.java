@@ -68,7 +68,7 @@ public class Department implements EmployeeGroup{
             return;
         for(int i = 0; i < this.size; i++){
             if(newEmployee.equals(this.employees[i])){
-                throw new AlreadyAddedException("Сотрудник уже есть в массиве");
+                //throw new AlreadyAddedException("Сотрудник уже есть в массиве");
             }
         }
         if (size >= employees.length) {
