@@ -63,7 +63,7 @@ public class Department implements EmployeeGroup{
         return null;
     }
 
-    public void addEmployee  (Employee newEmployee){
+    public void addEmployee (Employee newEmployee){
         if(newEmployee == null)
             return;
         for(int i = 0; i < this.size; i++){
