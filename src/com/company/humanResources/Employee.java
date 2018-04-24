@@ -66,16 +66,15 @@ public abstract class Employee {
 
     @Override
     public String toString(){
-        String res = String.format("%s %s, %s, %dр.", surname, name, jobTitle.toString(), salary);
-        /*StringBuilder res = new StringBuilder();
-        if (surname != null)
-            res.append(surname).append(" ");
-        if (name != null)
-            res.append(name).append(" ");
+        String res = "";// String.format("%s %s, %s, %dр.", surname, name, jobTitle.toString(), salary);
+        if (surname != null && name.equals(""))
+            res += String.format("%s ", this.surname);
+        if (name != null && name.equals(""))
+            res += String.format("%s, ", this.name);
         if (jobTitle != JobTitleEnum.NONE)
-            res.append(jobTitle.toString()).append(" ");
+            res += String.format("%s, ", this.jobTitle.toString());
         if (salary != 0)
-            res.append(salary).append("р.");*/
+            res += String.format("%dр.", this.salary);
         return res;
     }
 

@@ -63,9 +63,14 @@ public class Department implements EmployeeGroup{
         return null;
     }
 
-    public void addEmployee(Employee newEmployee){
+    public void addEmployee  (Employee newEmployee){
         if(newEmployee == null)
             return;
+        for(int i = 0; i < this.size; i++){
+            if(newEmployee.equals(this.employees[i])){
+                throw new AlreadyAddedException("Сотрудник уже есть в массиве");
+            }
+        }
         if (size >= employees.length) {
             Employee[] resEmployees = new Employee[employees.length * 2];
             System.arraycopy(employees, 0, resEmployees, 0, employees.length);

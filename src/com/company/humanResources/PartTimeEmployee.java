@@ -21,16 +21,15 @@ public class PartTimeEmployee extends Employee {
 
     @Override
     public String toString(){
-        String res = String.format("%s %s, %s(внешний совместитель), %dр.", super.getSurname(), super.getName(), super.getJobTitle().toString(), super.getSalary());
-        /*StringBuilder res = new StringBuilder();
-        if (super.getSurname() != null)
-            res.append(super.getSurname()).append(" ");
-        if (super.getName() != null)
-            res.append(super.getName()).append(" ");
+        String res = "";//String.format("%s %s, %s(внешний совместитель), %dр.", super.getSurname(), super.getName(), super.getJobTitle().toString(), super.getSalary());
+        if (super.getSurname() != null && super.getSurname().equals(""))
+            res += String.format("%s ", super.getSurname());
+        if (super.getName() != null && super.getName().equals(""))
+            res += String.format("%s, ", super.getName());
         if (super.getJobTitle() != JobTitleEnum.NONE)
-            res.append(super.getJobTitle().toString()).append("(внешний совместитель) ");
+            res += String.format("%s(анешний совместитель), ", super.getJobTitle().toString());
         if (super.getSalary() != 0)
-            res.append(super.getSalary()).append("р.");*/
+            res += String.format("%dр.", super.getSalary());
         return res;
     }
 

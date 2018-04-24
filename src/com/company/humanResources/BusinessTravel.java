@@ -58,16 +58,14 @@ public final class BusinessTravel {
 
     @Override
     public String toString(){
-        String res = String.format("%s %tF – %tF (%d). %s", destination, beginTravel, endTravel, compensation, description);
-        /*StringBuilder res = new StringBuilder();
-        if (destination != null)
-            res.append(destination).append(" ");
-        if (daysCount != 0)
-            res.append(daysCount).append(" ");
+        String res = "";//String.format("%s %tF – %tF (%d). %s", destination, beginTravel, endTravel, compensation, description);
+        if (destination != null && destination.equals(""))
+            res += String.format("%s ", destination);
+            res += String.format("%tF - %tF ", beginTravel, endTravel);
         if (compensation != 0)
-            res.append("(").append(compensation).append(").").append(" ");
-        if (description != null)
-            res.append(description);*/
+            res += String.format("(%d). ", compensation);
+        if (description != null && description.equals(""))
+            res += String.format("%s", description);
         return res;
     }
 
