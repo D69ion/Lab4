@@ -87,7 +87,11 @@ public class DepartmentsManager implements GroupsManager{
     }
 
     @Override
-    public void addGroup(EmployeeGroup employeeGroup){
+    public void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException {
+        for(int i = 0; i < this.size; i++){
+            if(employeeGroup.equals(this.groups[i]))
+                throw new AlreadyAddedException("Добавляемая группа уже есть в массиве");
+        }
         if (size >= groups.length){
             EmployeeGroup[] resDepartments = new Department[groups.length * 2];
             System.arraycopy(groups, 0, resDepartments, 0, groups.length);

@@ -100,7 +100,12 @@ public class Project implements EmployeeGroup{
         return res;
     }
 
-    public void addEmployee(Employee employee) {
+    public void addEmployee(Employee employee) throws AlreadyAddedException {
+        Employee[] employees = getEmployees();
+        for (int i = 0; i < this.size; i++){
+            if(employee.equals(employees[i]))
+                throw new AlreadyAddedException("Добавляемый сотрудник уже есть в массиве");
+        }
         this.employeesList.addLast(employee);
     }
 

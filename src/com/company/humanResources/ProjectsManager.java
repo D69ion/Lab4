@@ -21,7 +21,12 @@ public class ProjectsManager implements GroupsManager{
     }
 
     @Override
-    public void addGroup(EmployeeGroup employeeGroup) {
+    public void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException {
+        EmployeeGroup[] employeeGroups = getGroups();
+        for(int i = 0; i < this.size; i++){
+            if(employeeGroup.equals(employeeGroups[i]))
+                throw new AlreadyAddedException("Добавляемая группа уже есть в списке");
+        }
         this.size++;
         this.groups.addLast(employeeGroup);
     }

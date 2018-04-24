@@ -63,12 +63,12 @@ public class Department implements EmployeeGroup{
         return null;
     }
 
-    public void addEmployee(Employee newEmployee){
+    public void addEmployee(Employee newEmployee)throws AlreadyAddedException{
         if(newEmployee == null)
             return;
         for(int i = 0; i < this.size; i++){
             if(newEmployee.equals(this.employees[i])){
-                //throw new AlreadyAddedException("Сотрудник уже есть в массиве");
+                throw new AlreadyAddedException("Сотрудник уже есть в массиве");
             }
         }
         if (size >= employees.length) {
