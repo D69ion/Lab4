@@ -1,14 +1,15 @@
 package com.company.humanResources;
 
 import java.time.LocalDate;
+import java.util.*;
 
 public class Project implements EmployeeGroup{
     private String name;
-    private List employeesList;
+    private ArrayList<Employee> employeesList;
     private int size;
 
     private static final String DEFAULT_NAME = "";
-    private static final List DEFAULT_EMPLOYEES_LIST = null;
+    private static final ArrayList DEFAULT_EMPLOYEES_LIST = null;
     private static final int DEFAULT_SIZE = 0;
 
     public Project(String name) {
@@ -21,7 +22,7 @@ public class Project implements EmployeeGroup{
         this.name = name;
         this.size = employees.length;
         for (int i = 0; i < employees.length; i++) {
-            this.employeesList.addLast(employees[i]);
+            this.employeesList.add(employees[i]);
         }
     }
 
@@ -38,12 +39,12 @@ public class Project implements EmployeeGroup{
     }
 
     public Employee[] getEmployees(){
-        return this.employeesList.toArray();
+        return (Employee[]) this.employeesList.toArray();
     }
 
     public Employee[] getSortedEmployees(){
         Employee[] employees = getEmployees();
-        QSort(employees, 0, employees.length - 1);
+        Arrays.sort(employees);
         return employees;
     }
 
@@ -76,7 +77,7 @@ public class Project implements EmployeeGroup{
         Employee[] employees = getEmployees();
         int res = 0;
         for(int i = 0; i < this.size; i++){
-            if(employees[i] instanceof PartTimeEmployee){
+            if(employees[i] instanceof StaffEmployee){
                 if(((StaffEmployee)(employees[i])).isTravelNow()){
                     res++;
                 }
@@ -101,12 +102,12 @@ public class Project implements EmployeeGroup{
     }
 
     public void addEmployee(Employee employee) throws AlreadyAddedException {
-        Employee[] employees = getEmployees();
-        for (int i = 0; i < this.size; i++){
-            if(employee.equals(employees[i]))
+        for (Employee e: this.employeesList
+             ) {
+            if(employee.equals(e))
                 throw new AlreadyAddedException("Добавляемый сотрудник уже есть в массиве");
         }
-        this.employeesList.addLast(employee);
+        this.employeesList.add(employee);
     }
 
     public Employee getEmployee(String name, String surname) {
@@ -119,10 +120,10 @@ public class Project implements EmployeeGroup{
     }
 
     public boolean removeEmployee(String name, String surname) {
-        Employee[] employees = getEmployees();
-        for (int i = 0; i < employees.length; i++) {
-            if (employees[i].getName().equals(name) && employees[i].getSurname().equals(surname)) {
-                employeesList.deleteElement(employees[i]);
+        for (Employee e: this.employeesList
+             ) {
+            if(e.getName().equals(name) && e.getSurname().equals(surname)){
+                this.employeesList.remove(e);
                 return true;
             }
         }
@@ -130,17 +131,17 @@ public class Project implements EmployeeGroup{
     }
 
     public boolean removeEmployee(Employee employee){
-        this.employeesList.deleteElement(employee);
+        this.employeesList.remove(employee);
         return true;
     }
 
     public Employee getEmployeeWithMaxSalary(){
         Employee resEmployee = null;
-        Employee[] employees = getEmployees();
         int max = 0;
-        for(int i = 0; i < employees.length; i++){
-            if(employees[i].getSalary() > max)
-                resEmployee = employees[i];
+        for (Employee e: this.employeesList
+             ) {
+            if(e.getSalary() > max)
+                resEmployee = e;
         }
         return resEmployee;
     }
@@ -149,9 +150,9 @@ public class Project implements EmployeeGroup{
     public String toString(){
         StringBuilder res = new StringBuilder();
         res.append("Project ").append(getName()).append(": ").append(getSize()).append("\r\n");
-        Employee[] employees = getEmployees();
-        for(int i = 0; i < employees.length; i++){
-            res.append(employees[i].toString()).append("\r\n");
+        for (Employee e: this.employeesList
+             ) {
+            res.append(e.toString()).append("\r\n");
         }
         return res.toString();
     }
@@ -164,12 +165,12 @@ public class Project implements EmployeeGroup{
         Project project = (Project)obj;
         if(!(this.name.equals(project.getName()))) return false;
         if(!(this.size == project.getSize())) return false;
-        Employee[] projectEmployees = project.getEmployees();
-        Employee[] employees = this.employeesList.toArray();
         int temp = 0;
-        for(int i = 0; i < this.size; i++){
-            for(int j = 0; j < this.size; j++){
-                if(employees[i].equals(projectEmployees[j]))
+        for (Employee e: this.employeesList
+             ) {
+            for (Employee j: project.employeesList
+                 ) {
+                if(e.equals(j))
                     temp++;
             }
         }
@@ -180,115 +181,127 @@ public class Project implements EmployeeGroup{
     @Override
     public int hashCode(){
         int hash = this.size ^ this.name.hashCode();
-        Employee[] employees = getEmployees();
-        for(int i = 0; i < employees.length; i++){
-            hash ^= employees[i].hashCode();
+        for (Employee e: this.employeesList
+             ) {
+            hash ^= e.hashCode();
         }
         return hash;
     }
 
-    private void QSort(Employee[] employees, int low, int high){
-        int i = low, j = high; //low = 0; high = array.Length-1
-        int pivot = employees[low + (high - low) / 2].getSalary();
-        while (i <= j)
-        {
-            while (employees[i].getSalary() > pivot)
-                i++;
-            while (employees[j].getSalary() < pivot)
-                j--;
-            if (i <= j)
-            {
-                Swap(employees, i, j);
-                i++;
-                j--;
-            }
-        }
-        if (low < j)
-            QSort(employees, low, j);
-        if (i < high)
-            QSort(employees, i, high);
+    @Override
+    public int size() {
+        return this.employeesList.size();
     }
 
-    private static void Swap(Employee[] array, int i, int j)
-    {
-        Employee temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+    @Override
+    public boolean isEmpty() {
+        if(this.employeesList == null)
+            return false;
+        return true;
     }
 
-    private class ListElement {
-        ListElement next;
-        Employee data;
+    @Override
+    public boolean contains(Object o) {
+        return this.employeesList.contains(o);
     }
 
-    private class List {
-        private ListElement head;
-        private ListElement tail;
-        private int length = 0;
+    @Override
+    public Iterator<Employee> iterator() {
+        return this.employeesList.iterator();
+    }
 
-        public void addFirst(Employee data) {
-            ListElement a = new ListElement();
-            a.data = data;
-            if (head == null) {
-                head = a;
-                tail = a;
-            } else {
-                tail.next = a;
-                tail = a;
-            }
-            length++;
-        }
+    @Override
+    public Object[] toArray() {
+        return getEmployees();
+    }
 
-        public void addLast(Employee data) {
-            ListElement a = new ListElement();
-            a.data = data;
-            if (tail == null) {
-                head = a;
-                tail = a;
-            } else {
-                tail.next = a;
-                tail = a;
-            }
-            length++;
-        }
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return (T[]) getEmployees();
+    }
 
-        public void deleteElement(Employee data) {
-            if (head == null)
-                return;
-            if (head.equals(tail)) {
-                head = null;
-                tail = null;
-                length--;
-                return;
-            }
-            if (head.data.equals(data)) {
-                head = head.next;
-                length--;
-                return;
-            }
-            ListElement t = head;
-            while (t.next != null) {
-                if (t.next.data.equals(data)) {
-                    if (tail.equals(t.next))
-                        tail = t;
-                    t.next = t.next.next;
-                    length--;
-                    return;
-                }
-                t = t.next;
-            }
-        }
+    @Override
+    public boolean add(Employee employee) {
+        return this.employeesList.add(employee);
+    }
 
-        public Employee[] toArray() {
-            Employee[] res = new Employee[length];
-            int count = 0;
-            ListElement t = head;
-            while (t != null) {
-                res[count] = t.data;
-                t = t.next;
-                count++;
-            }
-            return res;
-        }
+    @Override
+    public boolean remove(Object o) {
+        return this.employeesList.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return this.employeesList.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Employee> c) {
+        return this.employeesList.addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends Employee> c) {
+        return this.employeesList.addAll(index, c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return this.employeesList.retainAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return this.employeesList.retainAll(c);
+    }
+
+    @Override
+    public void clear() {
+        this.employeesList.clear();
+    }
+
+    @Override
+    public Employee get(int index) {
+        return this.employeesList.get(index);
+    }
+
+    @Override
+    public Employee set(int index, Employee element) {
+        return this.employeesList.set(index, element);
+    }
+
+    @Override
+    public void add(int index, Employee element) {
+        this.employeesList.add(index, element);
+    }
+
+    @Override
+    public Employee remove(int index) {
+        return this.employeesList.remove(index);
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return this.employeesList.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return this.employeesList.lastIndexOf(o);
+    }
+
+    @Override
+    public ListIterator<Employee> listIterator() {
+        return this.employeesList.listIterator();
+    }
+
+    @Override
+    public ListIterator<Employee> listIterator(int index) {
+        return this.employeesList.listIterator(index);
+    }
+
+    @Override
+    public List<Employee> subList(int fromIndex, int toIndex) {
+        return this.employeesList.subList(fromIndex, toIndex);
     }
 }

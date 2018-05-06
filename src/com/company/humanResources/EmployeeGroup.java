@@ -1,8 +1,9 @@
 package com.company.humanResources;
 
 import java.time.LocalDate;
+import java.util.List;
 
-public interface EmployeeGroup{
+public interface EmployeeGroup extends List<Employee>{
     String getName();
     void setName(String groupName);
     void addEmployee(Employee employee) throws AlreadyAddedException;

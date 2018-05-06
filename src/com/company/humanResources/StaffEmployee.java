@@ -2,13 +2,14 @@ package com.company.humanResources;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class StaffEmployee extends Employee implements BusinessTraveller{
     private int bonus;
-    private List businessTravelList;
+    private ArrayList<BusinessTravel> businessTravelList;
 
     private static final int DEFAULT_BONUS = 0;
-    private static final List DEFAULT_BUSINESS_TRAVEL_LIST = null;
+    private static final ArrayList<BusinessTravel> DEFAULT_BUSINESS_TRAVEL_LIST = null;
 
 
     public StaffEmployee(String name, String surname){
@@ -27,7 +28,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
         super(name, surname, jobTitle, salary);
         this.bonus = DEFAULT_BONUS;
         for(int i = 0 ; i < businessTravels.length; i++){
-            businessTravelList.addLast(businessTravels[i]);
+            businessTravelList.add(businessTravels[i]);
         }
     }
 
@@ -44,18 +45,18 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     @Override
     public void addTravel(BusinessTravel travel) throws IllegalDatesException{
             BusinessTravel[] businessTravels = getTravels();
-            for(int i = 0; i < this.businessTravelList.length; i++) {
+            for(int i = 0; i < this.businessTravelList.size(); i++) {
                 if (travel.getBeginTravel().isAfter(businessTravels[i].getEndTravel()) || travel.getEndTravel().isBefore(businessTravels[i].getBeginTravel()))
                     throw new IllegalDatesException("Добавляемая командировка пересекается с другими командировками");
             }
-        businessTravelList.addLast(travel);
+        businessTravelList.add(travel);
     }
 
     @Override
     public BusinessTravel[] getTravels() {
-        if(businessTravelList.length == 0)
+        if(businessTravelList.size() == 0)
             return null;
-        return businessTravelList.toArray();
+        return (BusinessTravel[]) businessTravelList.toArray();
     }
 
     @Override
@@ -68,7 +69,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     @Override
     public int getTravelDaysQuantityFromTimeLapse(LocalDate startDate, LocalDate endDate) {
         BusinessTravel[] businessTravels = getTravels();
-        for(int i = 0; i < this.businessTravelList.length; i++){
+        for(int i = 0; i < this.businessTravelList.size(); i++){
             if(startDate.isAfter(businessTravels[i].getBeginTravel()) && endDate.isBefore(businessTravels[i].getEndTravel()))
                 return (int)ChronoUnit.DAYS.between(startDate, endDate);
             if(startDate.isAfter(businessTravels[i].getBeginTravel())&& startDate.isBefore(businessTravels[i].getEndTravel()) && endDate.isAfter(businessTravels[i].getEndTravel()))
@@ -83,7 +84,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     public String toString() {
         StringBuilder res = new StringBuilder();
         res.append(super.toString()).append(this.bonus).append("р.").append("\r\n").append("Командировки: \r\n");
-        BusinessTravel[] businessTravels = businessTravelList.toArray();
+        BusinessTravel[] businessTravels = (BusinessTravel[]) businessTravelList.toArray();
         for(int i = 0; i < businessTravels.length; i++){
             res.append(businessTravels[i].toString()).append("\r\n");
         }
@@ -102,88 +103,98 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     @Override
     public int hashCode(){
         int hash = super.hashCode() ^ this.bonus;
-        BusinessTravel[] businessTravels = businessTravelList.toArray();
+        BusinessTravel[] businessTravels = (BusinessTravel[]) businessTravelList.toArray();
         for(int i = 0; i < businessTravels.length; i++){
             hash ^= businessTravels[i].hashCode();
         }
         return hash;
     }
 
-    private class ListElement{
-        ListElement next;
-        BusinessTravel data;
+    @Override
+    public int size() {
+        return this.businessTravelList.size();
     }
 
-    private class List{
-        private ListElement head;
-        private ListElement tail;
-        private int length = 0;
+    @Override
+    public boolean isEmpty() {
+        if(this.businessTravelList == null)
+            return false;
+        return true;
+    }
 
-        public void addFirst(BusinessTravel data){
-            ListElement a = new ListElement();
-            a.data = data;
-            if(head == null){
-                head = a;
-                tail = a;
-            }
-            else{
-                tail.next = a;
-                tail = a;
-            }
-            length++;
-        }
+    @Override
+    public boolean contains(Object o) {
+        BusinessTravel businessTravel = (BusinessTravel) o;
+        return businessTravelList.contains(businessTravel);
+    }
 
-        public void addLast(BusinessTravel data){
-            ListElement a = new ListElement();
-            a.data = data;
-            if(tail == null){
-                head = a;
-                tail = a;
+    @Override
+    public Iterator<BusinessTravel> iterator() {//?????
+        //return this.businessTravelList.iterator();
+        Iterator<BusinessTravel> iterator = new Iterator<BusinessTravel>() {
+            public BusinessTravel[] businessTravels = getTravels();
+            public int size = businessTravelList.size();
+            @Override
+            public boolean hasNext() {
+                return false;
             }
-            else{
-                tail.next = a;
-                tail = a;
-            }
-            length++;
-        }
 
-        public void deleteElement(BusinessTravel data){
-            if(head == null)
-                return;
-            if(head.equals(tail)){
-                head = null;
-                tail = null;
-                length--;
-                return;
+            @Override
+            public BusinessTravel next() {
+                return null;
             }
-            if(head.data.equals(data)){
-                head = head.next;
-                length--;
-                return;
-            }
-            ListElement t = head;
-            while(t.next != null){
-                if(t.next.data.equals(data)){
-                    if(tail.equals(t.next))
-                        tail = t;
-                    t.next = t.next.next;
-                    length--;
-                    return;
-                }
-                t=t.next;
-            }
-        }
+        };
+        return iterator;
+    }
 
-        public BusinessTravel[] toArray(){
-            BusinessTravel[] res = new BusinessTravel[length];
-            int count = 0;
-            ListElement t = head;
-            while(t != null){
-                res[count] = t.data;
-                t = t.next;
-                count++;
-            }
-            return res;
+    @Override
+    public Object[] toArray() {
+        return getTravels();
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {//?????
+        return (T[]) getTravels();
+    }
+
+    @Override
+    public boolean add(BusinessTravel travel) {
+        try{
+            addTravel(travel);
         }
+        catch (IllegalDatesException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return this.businessTravelList.remove((BusinessTravel) o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {//????
+        return this.businessTravelList.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends BusinessTravel> c) {
+        return this.businessTravelList.addAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {//????
+        return this.businessTravelList.retainAll(c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return this.businessTravelList.removeAll(c);
+    }
+
+    @Override
+    public void clear() {
+        this.businessTravelList.clear();
     }
 }

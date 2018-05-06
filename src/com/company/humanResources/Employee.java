@@ -1,6 +1,6 @@
 package com.company.humanResources;
 
-public abstract class Employee {
+public abstract class Employee implements Comparable<Employee>{
     private String name;
     private String surname;
     private JobTitleEnum jobTitle;
@@ -19,8 +19,8 @@ public abstract class Employee {
         this (name, surname, DEFAULT_JOB_TITLE, DEFAULT_SALARY);
    }
 
-    protected Employee(String name, String surname, JobTitleEnum jobTitle, int salary){
-        if(salary < 0)
+    protected Employee(String name, String surname, JobTitleEnum jobTitle, int salary) {
+        if (salary < 0)
             throw new IllegalArgumentException("Передано отрицательное значение заработной платы");
         this.name = name;
         this.surname = surname;
@@ -91,5 +91,10 @@ public abstract class Employee {
     public int hashCode(){
         int hash = name.hashCode() ^ surname.hashCode() ^ jobTitle.hashCode() ^ salary;
         return hash;
+    }
+
+    @Override
+    public int compareTo(Employee o) {
+        return this.salary - o.salary;
     }
 }

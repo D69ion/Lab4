@@ -1,6 +1,7 @@
 package com.company.humanResources;
 
 import java.time.LocalDate;
+import java.util.*;
 
 public class Department implements EmployeeGroup{
     private String name;
@@ -178,7 +179,7 @@ public class Department implements EmployeeGroup{
 
     public Employee[] getSortedEmployees(){
         Employee[] resEmployees = getEmployees();
-        QSort(resEmployees, 0, resEmployees.length - 1);
+        Arrays.sort(resEmployees);
         return resEmployees;
     }
 
@@ -309,32 +310,131 @@ public class Department implements EmployeeGroup{
         return resEmployees;
     }
 
-    private void QSort(Employee[] employees, int low, int high){
-        int i = low, j = high; //low = 0; high = array.Length-1
-        int pivot = employees[low + (high - low) / 2].getSalary();
-        while (i <= j)
-        {
-            while (employees[i].getSalary() > pivot)
-                i++;
-            while (employees[j].getSalary() < pivot)
-                j--;
-            if (i <= j)
-            {
-                Swap(employees, i, j);
-                i++;
-                j--;
-            }
-        }
-        if (low < j)
-            QSort(employees, low, j);
-        if (i < high)
-            QSort(employees, i, high);
+    @Override
+    public int size() {
+        return this.size;
     }
 
-    private static void Swap(Employee[] array, int i, int j)
-    {
-        Employee temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+    @Override
+    public boolean isEmpty() {
+        if(this.size == 0)
+            return true;
+        return false;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        Employee employee = (Employee) o;
+        for(int i = 0; i < this.size; i++){
+            if(!this.employees[i].equals(employee))
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Iterator<Employee> iterator() {
+        return null;
+    }
+
+    @Override
+    public Object[] toArray() {
+        return this.employees;
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return (T[]) this.employees;
+    }
+
+    @Override
+    public boolean add(Employee employee) {
+        try {
+            this.addEmployee(employee);
+        }
+        catch (AlreadyAddedException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return removeEmployee((Employee) o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Employee> c) {
+        return false;
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends Employee> c) {
+        return false;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return false;
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public Employee get(int index) {
+        return null;
+    }
+
+    @Override
+    public Employee set(int index, Employee element) {
+        return null;
+    }
+
+    @Override
+    public void add(int index, Employee element) {
+
+    }
+
+    @Override
+    public Employee remove(int index) {
+        return null;
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return 0;
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return 0;
+    }
+
+    @Override
+    public ListIterator<Employee> listIterator() {
+        return null;
+    }
+
+    @Override
+    public ListIterator<Employee> listIterator(int index) {
+        return null;
+    }
+
+    @Override
+    public List<Employee> subList(int fromIndex, int toIndex) {
+        return null;
     }
 }
