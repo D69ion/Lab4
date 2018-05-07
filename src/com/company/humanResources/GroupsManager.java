@@ -1,8 +1,9 @@
 package com.company.humanResources;
 
 import java.time.LocalDate;
+import java.util.List;
 
-public interface GroupsManager {
+public interface GroupsManager extends List<EmployeeGroup>{
     void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException;
     int getGroupQuantity();
     int removeGroup(EmployeeGroup employeeGroup);

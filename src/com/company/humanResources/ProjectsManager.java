@@ -1,9 +1,10 @@
 package com.company.humanResources;
 
 import java.time.LocalDate;
+import java.util.*;
 
 public class ProjectsManager implements GroupsManager{
-    private List groups;
+    private ArrayList<EmployeeGroup> groups;
     private int size;
 
     private static final int DEFAULT_SIZE = 0;
@@ -15,20 +16,21 @@ public class ProjectsManager implements GroupsManager{
 
     public ProjectsManager(EmployeeGroup[] groups){
         this.size = groups.length;
-        for(int i = 0; i < this.size; i++){
-            this.groups.addLast(groups[i]);
+        for (EmployeeGroup employeeGroup: groups
+             ) {
+            this.groups.add(employeeGroup);
         }
     }
 
     @Override
     public void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException {
-        EmployeeGroup[] employeeGroups = getGroups();
-        for(int i = 0; i < this.size; i++){
-            if(employeeGroup.equals(employeeGroups[i]))
+        for (EmployeeGroup employeeGroup1: this.groups
+             ) {
+            if(employeeGroup.equals(employeeGroup1))
                 throw new AlreadyAddedException("Добавляемая группа уже есть в списке");
         }
         this.size++;
-        this.groups.addLast(employeeGroup);
+        this.groups.add(employeeGroup);
     }
 
     @Override
@@ -38,13 +40,13 @@ public class ProjectsManager implements GroupsManager{
 
     @Override
     public int removeGroup(EmployeeGroup employeeGroup) {
-        this.groups.deleteElement(employeeGroup);
+        this.groups.remove(employeeGroup);
         this.size--;
         return this.size;
     }
 
     @Override
-    public boolean removeGroup(String groupName) {
+    public boolean removeGroup(String groupName) {//??????
         int temp = -1;
         EmployeeGroup[] employeeGroups = getGroups();
         for (int i = 0; i < size; i++){
@@ -68,25 +70,25 @@ public class ProjectsManager implements GroupsManager{
 
     @Override
     public EmployeeGroup getEmployeeGroup(String groupName) {
-        EmployeeGroup[] employeeGroups = getGroups();
-        for(int i = 0; i < this.size; i++){
-            if(employeeGroups[i].getName().equals(groupName))
-                return employeeGroups[i];
+        for (EmployeeGroup employeeGroup: this.groups
+             ) {
+            if(employeeGroup.getName().equals(groupName))
+                return employeeGroup;
         }
         return null;
     }
 
     @Override
     public EmployeeGroup[] getGroups() {
-        return this.groups.getGroups();
+        return (EmployeeGroup[]) this.groups.toArray();
     }
 
     @Override
     public int getEmployeesQuantity() {
         int res = 0;
-        EmployeeGroup[] employeeGroups = getGroups();
-        for(int i = 0; i < this.size; i++){
-            res += employeeGroups[i].getSize();
+        for (EmployeeGroup employeeGroup: this.groups
+             ) {
+            res += employeeGroup.getSize();
         }
         return res;
     }
@@ -94,48 +96,54 @@ public class ProjectsManager implements GroupsManager{
     @Override
     public int getEmployees(JobTitleEnum jobTitle) {
         int res = 0;
-        EmployeeGroup[] employeeGroups = getGroups();
-        Employee[] employees = null;
-        for(int i = 0; i < this.size; i++){
-           employees = employeeGroups[i].getEmployees();
-           for(int j = 0; j < employees.length; j++){
-               if(employees[j].getJobTitle() == jobTitle)
-                   res++;
-           }
+        Employee[] employees;
+        for (EmployeeGroup employeeGroup: this.groups
+             ) {
+            employees = employeeGroup.getEmployees();
+            for(int j = 0; j < employees.length; j++){
+                if(employees[j].getJobTitle() == jobTitle)
+                    res++;
+            }
         }
         return res;
     }
 
     @Override
     public Employee employeeWithMaxSalary() {
-        EmployeeGroup[] employeeGroups = getGroups();
-        Employee employee = employeeGroups[0].getEmployeeWithMaxSalary();
-        Employee temp = null;
-        for(int i = 1; i < this.size; i++){
-            temp = employeeGroups[i].getEmployeeWithMaxSalary();
-            if(temp.getSalary() > employee.getSalary())
+        Employee employee = null;
+        Employee temp;
+        int max = 0;
+        for (EmployeeGroup employeeGroup: this.groups
+                ) {
+            temp = employeeGroup.getEmployeeWithMaxSalary();
+            if(max < temp.getSalary()) {
+                max = temp.getSalary();
                 employee = temp;
+            }
         }
-        return employee;
+        if(employee != null)
+            return employee;
+        else
+            return null;
     }
 
     @Override
     public EmployeeGroup getEmployeesGroup(String name, String surname) {
-        EmployeeGroup[] employeeGroups = getGroups();
-        for(int i = 0; i < this.size; i++){
-            if(employeeGroups[i].getEmployee(name, surname) != null)
-                return employeeGroups[i];
+        for (EmployeeGroup employeeGroup: this.groups
+             ) {
+            if(employeeGroup.getEmployee(name, surname) != null)
+                return employeeGroup;
         }
         return null;
     }
 
     @Override
     public int getPartTimeEmployeeQuantity() {
-        EmployeeGroup[] employeeGroups = getGroups();
         Employee[] employees;
         int res = 0;
-        for(int i = 0; i < this.size; i++) {
-            employees = employeeGroups[i].getEmployees();
+        for (EmployeeGroup employeeGroup : this.groups
+                ) {
+            employees = employeeGroup.getEmployees();
             for (int j = 0; j < this.size; j++) {
                 if (employees[j] instanceof PartTimeEmployee) {
                     res++;
@@ -147,11 +155,11 @@ public class ProjectsManager implements GroupsManager{
 
     @Override
     public int getStaffEmployeeQuantity() {
-        EmployeeGroup[] employeeGroups = getGroups();
         Employee[] employees;
         int res = 0;
-        for(int i = 0; i < this.size; i++) {
-            employees = employeeGroups[i].getEmployees();
+        for (EmployeeGroup employeeGroup: this.groups
+             ) {
+            employees = employeeGroup.getEmployees();
             for (int j = 0; j < this.size; j++) {
                 if (employees[j] instanceof StaffEmployee) {
                     res++;
@@ -163,13 +171,13 @@ public class ProjectsManager implements GroupsManager{
 
     @Override
     public int getCurrentTravellersQuantity() {
-        EmployeeGroup[] employeeGroups = getGroups();
         Employee[] employees;
         int res = 0;
-        for(int i = 0; i < this.size; i++) {
-            employees = employeeGroups[i].getEmployees();
+        for (EmployeeGroup employeeGroup: this.groups
+             ) {
+            employees = employeeGroup.getEmployees();
             for (int j = 0; j < this.size; j++) {
-                if (employees[j] instanceof PartTimeEmployee) {
+                if (employees[j] instanceof StaffEmployee) {
                     if (((StaffEmployee) (employees[j])).isTravelNow()) {
                         res++;
                     }
@@ -181,14 +189,14 @@ public class ProjectsManager implements GroupsManager{
 
     @Override
     public Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate) {
-        EmployeeGroup[] employeeGroups = getGroups();
         Employee[] res = new Employee[getStaffEmployeeQuantity()];
         Employee[] employees;
         int count = -1;
-        for(int i = 0; i < this.size; i++) {
-            employees = employeeGroups[i].getEmployees();
+        for (EmployeeGroup employeeGroup: this.groups
+             ) {
+            employees = employeeGroup.getEmployees();
             for (int j = 0; j < this.size; j++) {
-                if (employees[j] instanceof PartTimeEmployee) {
+                if (employees[j] instanceof StaffEmployee) {
                     if (((StaffEmployee) (employees[j])).getTravelDaysQuantityFromTimeLapse(startDate, endDate) > 0) {
                         res[++count] = employees[j];
                     }
@@ -198,80 +206,120 @@ public class ProjectsManager implements GroupsManager{
         return res;
     }
 
-
-    private class ListElement {
-        ListElement next;
-        EmployeeGroup data;
+    @Override
+    public int size() {
+        return this.size;
     }
 
-    private class List {
-        private ListElement head;
-        private ListElement tail;
-        private int length = 0;
+    @Override
+    public boolean isEmpty() {
+        if(this.groups == null)
+            return true;
+        return false;
+    }
 
-        public void addFirst(EmployeeGroup data) {
-            ListElement a = new ListElement();
-            a.data = data;
-            if (head == null) {
-                head = a;
-                tail = a;
-            } else {
-                tail.next = a;
-                tail = a;
-            }
-            length++;
-        }
+    @Override
+    public boolean contains(Object o) {
+        return this.groups.contains(o);
+    }
 
-        public void addLast(EmployeeGroup data) {
-            ListElement a = new ListElement();
-            a.data = data;
-            if (tail == null) {
-                head = a;
-                tail = a;
-            } else {
-                tail.next = a;
-                tail = a;
-            }
-            length++;
-        }
+    @Override
+    public Iterator<EmployeeGroup> iterator() {
+        return this.groups.iterator();
+    }
 
-        public void deleteElement(EmployeeGroup data) {
-            if (head == null)
-                return;
-            if (head.equals(tail)) {
-                head = null;
-                tail = null;
-                length--;
-                return;
-            }
-            if (head.data.equals(data)) {
-                head = head.next;
-                length--;
-                return;
-            }
-            ListElement t = head;
-            while (t.next != null) {
-                if (t.next.data.equals(data)) {
-                    if (tail.equals(t.next))
-                        tail = t;
-                    t.next = t.next.next;
-                    length--;
-                    return;
-                }
-                t = t.next;
-            }
-        }
+    @Override
+    public Object[] toArray() {
+        return this.groups.toArray();
+    }
 
-        public EmployeeGroup[] getGroups(){
-            EmployeeGroup[] res = new EmployeeGroup[length];
-            int count = 0;
-            ListElement t = head;
-            while(t != null){
-                res[count] = t.data;
-                t = t.next;
-                count++;
-            }
-            return res;
-        }
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return this.groups.toArray(a);
+    }
+
+    @Override
+    public boolean add(EmployeeGroup employeeGroup) {
+        return this.groups.add(employeeGroup);
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        return this.groups.remove(o);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return this.groups.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends EmployeeGroup> c) {
+        return this.groups.addAll(c);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends EmployeeGroup> c) {
+        return this.groups.addAll(index, c);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return this.groups.removeAll(c);
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        return this.groups.retainAll(c);
+    }
+
+    @Override
+    public void clear() {
+        this.groups.clear();
+    }
+
+    @Override
+    public EmployeeGroup get(int index) {
+        return this.groups.get(index);
+    }
+
+    @Override
+    public EmployeeGroup set(int index, EmployeeGroup element) {
+        return this.groups.set(index, element);
+    }
+
+    @Override
+    public void add(int index, EmployeeGroup element) {
+        this.groups.add(index, element);
+    }
+
+    @Override
+    public EmployeeGroup remove(int index) {
+        return this.groups.remove(index);
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return this.groups.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return this.groups.lastIndexOf(o);
+    }
+
+    @Override
+    public ListIterator<EmployeeGroup> listIterator() {
+        return this.groups.listIterator();
+    }
+
+    @Override
+    public ListIterator<EmployeeGroup> listIterator(int index) {
+        return this.groups.listIterator(index);
+    }
+
+    @Override
+    public List<EmployeeGroup> subList(int fromIndex, int toIndex) {
+        return this.groups.subList(fromIndex, toIndex);
     }
 }

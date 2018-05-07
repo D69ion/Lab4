@@ -21,8 +21,9 @@ public class Project implements EmployeeGroup{
     public Project(String name, Employee[] employees) {
         this.name = name;
         this.size = employees.length;
-        for (int i = 0; i < employees.length; i++) {
-            this.employeesList.add(employees[i]);
+        for (Employee employee: employees
+             ) {
+            this.employeesList.add(employee);
         }
     }
 
@@ -101,29 +102,29 @@ public class Project implements EmployeeGroup{
         return res;
     }
 
-    public void addEmployee(Employee employee) throws AlreadyAddedException {
-        for (Employee e: this.employeesList
+    public void addEmployee(Employee newEmployee) throws AlreadyAddedException {
+        for (Employee employee: this.employeesList
              ) {
-            if(employee.equals(e))
+            if(employee.equals(newEmployee))
                 throw new AlreadyAddedException("Добавляемый сотрудник уже есть в массиве");
         }
-        this.employeesList.add(employee);
+        this.employeesList.add(newEmployee);
     }
 
     public Employee getEmployee(String name, String surname) {
-        Employee[] employees = getEmployees();
-        for (int i = 0; i < employees.length; i++) {
-            if (employees[i].getName().equals(name) && employees[i].getSurname().equals(surname))
-                return employees[i];
+        for (Employee employee: this.employeesList
+             ) {
+            if (employee.getName().equals(name) && employee.getSurname().equals(surname))
+                return employee;
         }
         return null;
     }
 
     public boolean removeEmployee(String name, String surname) {
-        for (Employee e: this.employeesList
+        for (Employee employee: this.employeesList
              ) {
-            if(e.getName().equals(name) && e.getSurname().equals(surname)){
-                this.employeesList.remove(e);
+            if(employee.getName().equals(name) && employee.getSurname().equals(surname)){
+                this.employeesList.remove(employee);
                 return true;
             }
         }
@@ -138,10 +139,10 @@ public class Project implements EmployeeGroup{
     public Employee getEmployeeWithMaxSalary(){
         Employee resEmployee = null;
         int max = 0;
-        for (Employee e: this.employeesList
+        for (Employee employee: this.employeesList
              ) {
-            if(e.getSalary() > max)
-                resEmployee = e;
+            if(employee.getSalary() > max)
+                resEmployee = employee;
         }
         return resEmployee;
     }
@@ -150,9 +151,9 @@ public class Project implements EmployeeGroup{
     public String toString(){
         StringBuilder res = new StringBuilder();
         res.append("Project ").append(getName()).append(": ").append(getSize()).append("\r\n");
-        for (Employee e: this.employeesList
+        for (Employee employee: this.employeesList
              ) {
-            res.append(e.toString()).append("\r\n");
+            res.append(employee.toString()).append("\r\n");
         }
         return res.toString();
     }
@@ -166,11 +167,11 @@ public class Project implements EmployeeGroup{
         if(!(this.name.equals(project.getName()))) return false;
         if(!(this.size == project.getSize())) return false;
         int temp = 0;
-        for (Employee e: this.employeesList
+        for (Employee employee: this.employeesList
              ) {
             for (Employee j: project.employeesList
                  ) {
-                if(e.equals(j))
+                if(employee.equals(j))
                     temp++;
             }
         }
@@ -181,9 +182,9 @@ public class Project implements EmployeeGroup{
     @Override
     public int hashCode(){
         int hash = this.size ^ this.name.hashCode();
-        for (Employee e: this.employeesList
+        for (Employee employee: this.employeesList
              ) {
-            hash ^= e.hashCode();
+            hash ^= employee.hashCode();
         }
         return hash;
     }
@@ -212,12 +213,12 @@ public class Project implements EmployeeGroup{
 
     @Override
     public Object[] toArray() {
-        return getEmployees();
+        return this.employeesList.toArray();
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        return (T[]) getEmployees();
+        return this.employeesList.toArray(a);
     }
 
     @Override

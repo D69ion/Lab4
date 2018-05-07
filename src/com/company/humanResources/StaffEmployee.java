@@ -27,8 +27,9 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     public StaffEmployee(String name, String surname, JobTitleEnum jobTitle, int salary, BusinessTravel[] businessTravels){
         super(name, surname, jobTitle, salary);
         this.bonus = DEFAULT_BONUS;
-        for(int i = 0 ; i < businessTravels.length; i++){
-            businessTravelList.add(businessTravels[i]);
+        for (BusinessTravel businessTravel: businessTravels
+             ) {
+            this.businessTravelList.add(businessTravel);
         }
     }
 
@@ -43,13 +44,13 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     }
 
     @Override
-    public void addTravel(BusinessTravel travel) throws IllegalDatesException{
-            BusinessTravel[] businessTravels = getTravels();
-            for(int i = 0; i < this.businessTravelList.size(); i++) {
-                if (travel.getBeginTravel().isAfter(businessTravels[i].getEndTravel()) || travel.getEndTravel().isBefore(businessTravels[i].getBeginTravel()))
-                    throw new IllegalDatesException("Добавляемая командировка пересекается с другими командировками");
-            }
-        businessTravelList.add(travel);
+    public void addTravel(BusinessTravel travel) throws IllegalDatesException {
+        for (BusinessTravel businessTravel : this.businessTravelList
+                ) {
+            if (travel.getBeginTravel().isAfter(businessTravel.getEndTravel()) || travel.getEndTravel().isBefore(businessTravel.getBeginTravel()))
+                throw new IllegalDatesException("Добавляемая командировка пересекается с другими командировками");
+        }
+        this.businessTravelList.add(travel);
     }
 
     @Override
@@ -68,14 +69,14 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
 
     @Override
     public int getTravelDaysQuantityFromTimeLapse(LocalDate startDate, LocalDate endDate) {
-        BusinessTravel[] businessTravels = getTravels();
-        for(int i = 0; i < this.businessTravelList.size(); i++){
-            if(startDate.isAfter(businessTravels[i].getBeginTravel()) && endDate.isBefore(businessTravels[i].getEndTravel()))
+        for (BusinessTravel businessTravel: this.businessTravelList
+             ) {
+            if(startDate.isAfter(businessTravel.getBeginTravel()) && endDate.isBefore(businessTravel.getEndTravel()))
                 return (int)ChronoUnit.DAYS.between(startDate, endDate);
-            if(startDate.isAfter(businessTravels[i].getBeginTravel())&& startDate.isBefore(businessTravels[i].getEndTravel()) && endDate.isAfter(businessTravels[i].getEndTravel()))
-                return (int)ChronoUnit.DAYS.between(startDate, businessTravels[i].getEndTravel());
-            if(endDate.isAfter(businessTravels[i].getBeginTravel())&& endDate.isBefore(businessTravels[i].getEndTravel()) && startDate.isBefore(businessTravels[i].getBeginTravel()))
-                return (int) ChronoUnit.DAYS.between(businessTravels[i].getBeginTravel(), endDate);
+            if(startDate.isAfter(businessTravel.getBeginTravel())&& startDate.isBefore(businessTravel.getEndTravel()) && endDate.isAfter(businessTravel.getEndTravel()))
+                return (int)ChronoUnit.DAYS.between(startDate, businessTravel.getEndTravel());
+            if(endDate.isAfter(businessTravel.getBeginTravel())&& endDate.isBefore(businessTravel.getEndTravel()) && startDate.isBefore(businessTravel.getBeginTravel()))
+                return (int) ChronoUnit.DAYS.between(businessTravel.getBeginTravel(), endDate);
         }
         return 0;
     }
@@ -84,9 +85,9 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     public String toString() {
         StringBuilder res = new StringBuilder();
         res.append(super.toString()).append(this.bonus).append("р.").append("\r\n").append("Командировки: \r\n");
-        BusinessTravel[] businessTravels = (BusinessTravel[]) businessTravelList.toArray();
-        for(int i = 0; i < businessTravels.length; i++){
-            res.append(businessTravels[i].toString()).append("\r\n");
+        for (BusinessTravel businessTravel: this.businessTravelList
+             ) {
+            res.append(businessTravel.toString()).append("\r\n");
         }
         return res.toString();
     }
@@ -103,9 +104,9 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     @Override
     public int hashCode(){
         int hash = super.hashCode() ^ this.bonus;
-        BusinessTravel[] businessTravels = (BusinessTravel[]) businessTravelList.toArray();
-        for(int i = 0; i < businessTravels.length; i++){
-            hash ^= businessTravels[i].hashCode();
+        for (BusinessTravel businessTravel: this.businessTravelList
+             ) {
+            hash ^= businessTravel.hashCode();
         }
         return hash;
     }
@@ -129,32 +130,18 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     }
 
     @Override
-    public Iterator<BusinessTravel> iterator() {//?????
-        //return this.businessTravelList.iterator();
-        Iterator<BusinessTravel> iterator = new Iterator<BusinessTravel>() {
-            public BusinessTravel[] businessTravels = getTravels();
-            public int size = businessTravelList.size();
-            @Override
-            public boolean hasNext() {
-                return false;
-            }
-
-            @Override
-            public BusinessTravel next() {
-                return null;
-            }
-        };
-        return iterator;
+    public Iterator<BusinessTravel> iterator() {
+        return this.businessTravelList.iterator();
     }
 
     @Override
     public Object[] toArray() {
-        return getTravels();
+        return this.businessTravelList.toArray();
     }
 
     @Override
-    public <T> T[] toArray(T[] a) {//?????
-        return (T[]) getTravels();
+    public <T> T[] toArray(T[] a) {
+        return this.businessTravelList.toArray(a);
     }
 
     @Override
@@ -174,7 +161,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     }
 
     @Override
-    public boolean containsAll(Collection<?> c) {//????
+    public boolean containsAll(Collection<?> c) {
         return this.businessTravelList.containsAll(c);
     }
 
@@ -184,7 +171,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller{
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {//????
+    public boolean retainAll(Collection<?> c) {
         return this.businessTravelList.retainAll(c);
     }
 
