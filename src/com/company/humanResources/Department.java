@@ -55,12 +55,10 @@ public class Department implements EmployeeGroup{
     }
 
     public Employee getEmployee(String name, String surname){
-        for (Employee e: employees
-             ) {
-            if(e.getName().equals(name) && e.getSurname().equals(surname)){
-                return e;
+        for(int i = 0; i < this.size; i++){
+            if(employees[i].getName().equals(name) && employees[i].getSurname().equals(surname))
+                return employees[i];
             }
-        }
         return null;
     }
 
@@ -167,19 +165,23 @@ public class Department implements EmployeeGroup{
     public Employee getEmployeeWithMaxSalary(){
         int max = 0;
         Employee employee = null;
-            for (Employee e: employees
-                    ) {
-                if(e.getSalary() > max) {
-                    max = e.getSalary();
-                    employee = e;
-                }
+        for(int i = 0; i < this.size; i++){
+            if(employees[i].getSalary() > max) {
+                max = employees[i].getSalary();
+                employee = employees[i];
             }
+        }
         return employee;
     }
 
     public Employee[] getSortedEmployees(){
         Employee[] resEmployees = getEmployees();
-        Arrays.sort(resEmployees);
+        Arrays.sort(resEmployees, new Comparator<Employee>() {
+            @Override
+            public int compare(Employee o1, Employee o2) {
+                return o1.compareTo(o2);
+            }
+        }.reversed());
         return resEmployees;
     }
 
@@ -293,17 +295,15 @@ public class Department implements EmployeeGroup{
 
     private Employee[] removeNullElements(Employee[] employees){
         int count = 0;
-        for (Employee e: employees
-             ) {
-            if (e == null)
+        for(int i = 0; i < this.size; i++){
+            if (employees[i] == null)
                 count++;
         }
         Employee[] resEmployees = new Employee[employees.length - count];
         count = 0;
-        for (Employee e: employees
-             ) {
-            if(e != null){
-                resEmployees[count] = e;
+        for(int i = 0; i < this.size; i++){
+            if(employees[i] != null){
+                resEmployees[count] = employees[i];
                 count++;
             }
         }
@@ -325,16 +325,34 @@ public class Department implements EmployeeGroup{
     @Override
     public boolean contains(Object o) {
         Employee employee = (Employee) o;
+        boolean b = false;
         for(int i = 0; i < this.size; i++){
-            if(!this.employees[i].equals(employee))
-                return false;
+            if(this.employees[i].equals(employee))
+                b = true;
         }
-        return true;
+        return b;
     }
 
     @Override
     public Iterator<Employee> iterator() {
-        return null;
+        return new Iterator<Employee>() {
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                if(index < size)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public Employee next() {
+                if(this.hasNext()){
+                    return employees[index++];
+                }
+                return null;
+            }
+        };
     }
 
     @Override
@@ -365,62 +383,147 @@ public class Department implements EmployeeGroup{
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        Employee[] employees = (Employee[]) c.toArray();
+        boolean b = false;
+        for(int i = 0; i < employees.length; i++){
+            for(int j = 0; j < this.size; j++){
+                if(employees[i].equals(this.employees[j]))
+                    b = true;
+            }
+            if(!b)
+                return false;
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends Employee> c) {
-        return false;
+        Employee[] employees = (Employee[]) c.toArray();
+        try {
+            for (int i = 0; i < employees.length; i++) {
+                this.addEmployee(employees[i]);
+            }
+        }
+        catch (AlreadyAddedException e){
+            e.printStackTrace();
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends Employee> c) {
+        Employee[] newEmployees = (Employee[]) c.toArray();
+        if(this.size == this.employees.length || this.size + newEmployees.length < this.employees.length){
+            Employee[] employees = new Employee[this.size * 2];
+            System.arraycopy(this.employees, 0, employees, 0, index);
+            for(int i = 0; i < newEmployees.length; i++){
+                this.employees[index] = newEmployees[i];
+                index++;
+            }
+            System.arraycopy(this.employees, index, employees, index, this.size - (index - newEmployees.length));
+            this.employees = employees;
+            return true;
+        }
+        if(this.size + newEmployees.length >= this.employees.length){
+            System.arraycopy(this.employees, 0, this.employees, 0, index);
+            for(int i = 0; i < newEmployees.length; i++){
+                this.employees[index] = newEmployees[i];
+                index++;
+            }
+            System.arraycopy(this.employees, index, this.employees, index, this.size - (index - newEmployees.length));
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        Employee[] employees = (Employee[]) c.toArray();
+        for(int i = 0; i < employees.length; i++){
+            if(!this.remove(employees[i]))
+                return false;
+        }
+        return true;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        Employee[] resEmployees = new Employee[this.size];
+        Employee[] employees = (Employee[]) c.toArray();
+        int count = 0;
+        for(int i = 0; i < employees.length; i++){
+            for(int j = 0; j < this.size; j++){
+                if(employees[i].equals(this.employees[j])){
+                    resEmployees[count] = employees[i];
+                    count++;
+                }
+            }
+        }
+        if(count == 0)
+            return false;
+        this.employees = resEmployees;
+        return true;
     }
 
     @Override
     public void clear() {
-
+        this.employees = null;
     }
 
     @Override
     public Employee get(int index) {
-        return null;
+        return this.employees[index];
     }
 
     @Override
     public Employee set(int index, Employee element) {
-        return null;
+        Employee employee = this.employees[index] ;
+        this.employees[index] = element;
+        return employee;
     }
 
     @Override
     public void add(int index, Employee element) {
-
+        if(this.employees[index] == null){
+            this.employees[index] = element;
+            return;
+        }
+        if(this.size == this.employees.length){
+            Employee[] employees = new Employee[this.size * 2];
+            System.arraycopy(this.employees, 0, employees, 0, index);
+            employees[index] = element;
+            System.arraycopy(this.employees, index, employees, index + 1, this.size - index);
+            return;
+        }
+        System.arraycopy(this.employees, index, this.employees, index + 1, this.size - index);
+        this.employees[index] = element;
     }
 
     @Override
     public Employee remove(int index) {
-        return null;
+        Employee employee = this.employees[index];
+        this.remove(employee);
+        return employee;
     }
 
     @Override
     public int indexOf(Object o) {
-        return 0;
+        Employee employee = (Employee) o;
+        for(int i = 0; i < this.size; i++){
+            if(employee.equals(this.employees[i]))
+                return i;
+        }
+        return -1;
     }
 
     @Override
     public int lastIndexOf(Object o) {
-        return 0;
+        Employee employee = (Employee) o;
+        for(int i = this.size - 1; i > 0; i--){
+            if(employee.equals(this.employees[i]))
+                return i;
+        }
+        return -1;
     }
 
     @Override

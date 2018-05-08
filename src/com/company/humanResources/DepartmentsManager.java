@@ -1,6 +1,7 @@
 package com.company.humanResources;
 
 import java.time.LocalDate;
+import java.util.*;
 
 public class DepartmentsManager implements GroupsManager{
     private String name;
@@ -9,6 +10,10 @@ public class DepartmentsManager implements GroupsManager{
 
     private static final String DEFAULT_GROUP_NAME = "";
     private static final int DEFAULT_SIZE = 0;
+
+    public DepartmentsManager(){
+        this(DEFAULT_GROUP_NAME, DEFAULT_SIZE);
+    }
 
     public DepartmentsManager(String name){
         this(name, new Department[DEFAULT_SIZE]);
@@ -258,5 +263,238 @@ public class DepartmentsManager implements GroupsManager{
             }
         }
         return res;
+    }
+
+    @Override
+    public int size() {
+        return this.size;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        if(this.size == 0)
+            return true;
+        return false;
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        EmployeeGroup employeeGroup = (EmployeeGroup) o;
+        boolean b = false;
+        for(int i = 0; i < this.size; i++){
+            if(this.groups[i].equals(employeeGroup))
+                b = true;
+        }
+        return b;
+    }
+
+    @Override
+    public Iterator<EmployeeGroup> iterator() {
+        return new Iterator<EmployeeGroup>() {
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                if(index < size)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public EmployeeGroup next() {
+                if(this.hasNext()){
+                    return groups[index++];
+                }
+                return null;
+            }
+        };
+    }
+
+    @Override
+    public Object[] toArray() {
+        return this.groups;
+    }
+
+    @Override
+    public <T> T[] toArray(T[] a) {
+        return (T[]) this.groups;
+    }
+
+    @Override
+    public boolean add(EmployeeGroup employee) {
+        try {
+            this.addGroup(employee);
+        }
+        catch (AlreadyAddedException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        if(removeGroup((EmployeeGroup) o) > 0)
+            return true;
+        return false;
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        EmployeeGroup[] employeeGroups = (EmployeeGroup[]) c.toArray();
+        boolean b = false;
+        for(int i = 0; i < employeeGroups.length; i++){
+            for(int j = 0; j < this.size; j++){
+                if(employeeGroups[i].equals(this.groups[j]))
+                    b = true;
+            }
+            if(!b)
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends EmployeeGroup> c) {
+        EmployeeGroup[] employeeGroups = (EmployeeGroup[]) c.toArray();
+        try {
+            for (int i = 0; i < employeeGroups.length; i++) {
+                this.addGroup(employeeGroups[i]);
+            }
+        }
+        catch (AlreadyAddedException e){
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends EmployeeGroup> c) {
+        EmployeeGroup[] newEmployeeGroups = (EmployeeGroup[]) c.toArray();
+        if(this.size == this.groups.length || this.size + newEmployeeGroups.length < this.groups.length){
+            EmployeeGroup[] employeeGroups = new EmployeeGroup[this.size * 2];
+            System.arraycopy(this.groups, 0, employeeGroups, 0, index);
+            for(int i = 0; i < newEmployeeGroups.length; i++){
+                this.groups[index] = newEmployeeGroups[i];
+                index++;
+            }
+            System.arraycopy(this.groups, index, employeeGroups, index, this.size - (index - newEmployeeGroups.length));
+            this.groups = employeeGroups;
+            return true;
+        }
+        if(this.size + newEmployeeGroups.length >= this.groups.length){
+            System.arraycopy(this.groups, 0, this.groups, 0, index);
+            for(int i = 0; i < newEmployeeGroups.length; i++){
+                this.groups[index] = newEmployeeGroups[i];
+                index++;
+            }
+            System.arraycopy(this.groups, index, this.groups, index, this.size - (index - newEmployeeGroups.length));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        Employee[] employees = (Employee[]) c.toArray();
+        for(int i = 0; i < employees.length; i++){
+            if(!this.remove(employees[i]))
+                return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean retainAll(Collection<?> c) {
+        EmployeeGroup[] resEmployees = new EmployeeGroup[this.size];
+        EmployeeGroup[] employees = (EmployeeGroup[]) c.toArray();
+        int count = 0;
+        for(int i = 0; i < employees.length; i++){
+            for(int j = 0; j < this.size; j++){
+                if(employees[i].equals(this.groups[j])){
+                    resEmployees[count] = employees[i];
+                    count++;
+                }
+            }
+        }
+        if(count == 0)
+            return false;
+        this.groups = resEmployees;
+        return true;
+    }
+
+    @Override
+    public void clear() {
+        this.groups = null;
+    }
+
+    @Override
+    public EmployeeGroup get(int index) {
+        return this.groups[index];
+    }
+
+    @Override
+    public EmployeeGroup set(int index, EmployeeGroup element) {
+        EmployeeGroup employeeGroup = this.groups[index] ;
+        this.groups[index] = element;
+        return employeeGroup;
+    }
+
+    @Override
+    public void add(int index, EmployeeGroup element) {
+        if(this.groups[index] == null){
+            this.groups[index] = element;
+            return;
+        }
+        if(this.size == this.groups.length){
+            EmployeeGroup[] employeeGroups = new EmployeeGroup[this.size * 2];
+            System.arraycopy(this.groups, 0, employeeGroups, 0, index);
+            employeeGroups[index] = element;
+            System.arraycopy(this.groups, index, employeeGroups, index + 1, this.size - index);
+            return;
+        }
+        System.arraycopy(this.groups, index, this.groups, index + 1, this.size - index);
+        this.groups[index] = element;
+    }
+
+    @Override
+    public EmployeeGroup remove(int index) {
+        EmployeeGroup employeeGroup = this.groups[index];
+        this.remove(employeeGroup);
+        return employeeGroup;
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        EmployeeGroup employeeGroup = (EmployeeGroup) o;
+        for(int i = 0; i < this.size; i++){
+            if(employeeGroup.equals(this.groups[i]))
+                return i;
+        }
+        return -1;
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        EmployeeGroup employeeGroup = (EmployeeGroup) o;
+        for(int i = this.size - 1; i > 0; i--){
+            if(employeeGroup.equals(this.groups[i]))
+                return i;
+        }
+        return -1;
+    }
+
+    @Override
+    public ListIterator<EmployeeGroup> listIterator() {
+        return null;
+    }
+
+    @Override
+    public ListIterator<EmployeeGroup> listIterator(int index) {
+        return null;
+    }
+
+    @Override
+    public List<EmployeeGroup> subList(int fromIndex, int toIndex) {
+        return null;
     }
 }

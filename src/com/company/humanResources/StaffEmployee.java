@@ -6,10 +6,10 @@ import java.util.*;
 
 public class StaffEmployee extends Employee implements BusinessTraveller{
     private int bonus;
-    private ArrayList<BusinessTravel> businessTravelList;
+    private HashSet<BusinessTravel> businessTravelList;
 
     private static final int DEFAULT_BONUS = 0;
-    private static final ArrayList<BusinessTravel> DEFAULT_BUSINESS_TRAVEL_LIST = null;
+    private static final HashSet<BusinessTravel> DEFAULT_BUSINESS_TRAVEL_LIST = null;
 
 
     public StaffEmployee(String name, String surname){
