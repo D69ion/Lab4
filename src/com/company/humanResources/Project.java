@@ -105,10 +105,6 @@ public class Project implements EmployeeGroup{
     public void addEmployee(Employee newEmployee) throws AlreadyAddedException {
         for (Employee employee: this.employeesList
              ) {
-
-        }
-        for (Employee employee: this.employeesList
-             ) {
             if(employee.equals(newEmployee))
                 throw new AlreadyAddedException("Добавляемый сотрудник уже есть в массиве");
         }
