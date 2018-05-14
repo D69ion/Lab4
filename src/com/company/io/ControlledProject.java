@@ -21,5 +21,9 @@ public class ControlledProject extends Project {
         return isChanged;
     }
 
-
+    @Override
+    public void addEmployee(Employee newEmployee) throws AlreadyAddedException {
+        super.addEmployee(newEmployee);
+        isChanged = true;
+    }
 }
