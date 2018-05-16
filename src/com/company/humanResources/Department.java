@@ -1,15 +1,20 @@
 package com.company.humanResources;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Department implements EmployeeGroup{
+public class Department implements EmployeeGroup, Serializable{
     private String name;
     private Employee[] employees;
     private int size;
 	
 	private static final String DEFAULT_NAME = "";
 	private static final int DEFAULT_SIZE = 8;
+
+	public Department(){
+	    this (DEFAULT_NAME, DEFAULT_SIZE);
+    }
 
     public Department(String name){
         this (name, DEFAULT_SIZE);

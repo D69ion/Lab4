@@ -3,7 +3,7 @@ package com.company.humanResources;
 import java.time.LocalDate;
 import java.util.*;
 
-public class DepartmentsManager implements GroupsManager{
+public class DepartmentManager implements GroupsManager{
     private String name;
     private EmployeeGroup[] groups;
     private int size;
@@ -11,15 +11,15 @@ public class DepartmentsManager implements GroupsManager{
     private static final String DEFAULT_GROUP_NAME = "";
     private static final int DEFAULT_SIZE = 0;
 
-    public DepartmentsManager(){
+    public DepartmentManager(){
         this(DEFAULT_GROUP_NAME, DEFAULT_SIZE);
     }
 
-    public DepartmentsManager(String name){
+    public DepartmentManager(String name){
         this(name, new Department[DEFAULT_SIZE]);
     }
 
-    public DepartmentsManager(String name, int size){
+    public DepartmentManager(String name, int size){
         if(size < 0)
             throw new NegativeSizeException("Передана отрицательная длина массива");
         this.name = name;
@@ -27,7 +27,7 @@ public class DepartmentsManager implements GroupsManager{
         this.size = size;
     }
 
-    public DepartmentsManager(String name, Department[] groups){
+    public DepartmentManager(String name, Department[] groups){
         this.name = name;
         this.groups = groups;
         this.size = groups.length;

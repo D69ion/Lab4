@@ -1,9 +1,10 @@
 package com.company.humanResources;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Project implements EmployeeGroup{
+public class Project implements EmployeeGroup, Serializable{
     private String name;
     private ArrayList<Employee> employeesList;
     private int size;
@@ -11,6 +12,10 @@ public class Project implements EmployeeGroup{
     private static final String DEFAULT_NAME = "";
     private static final ArrayList DEFAULT_EMPLOYEES_LIST = null;
     private static final int DEFAULT_SIZE = 0;
+
+    public Project(){
+        this (DEFAULT_NAME);
+    }
 
     public Project(String name) {
         this.name = name;

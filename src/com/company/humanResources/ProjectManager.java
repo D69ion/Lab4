@@ -3,18 +3,18 @@ package com.company.humanResources;
 import java.time.LocalDate;
 import java.util.*;
 
-public class ProjectsManager implements GroupsManager{
+public class ProjectManager implements GroupsManager{
     private ArrayList<EmployeeGroup> groups;
     private int size;
 
     private static final int DEFAULT_SIZE = 0;
 
-    public ProjectsManager(){
+    public ProjectManager(){
         this.groups = null;
         this.size = DEFAULT_SIZE;
     }
 
-    public ProjectsManager(EmployeeGroup[] groups){
+    public ProjectManager(EmployeeGroup[] groups){
         this.size = groups.length;
         for (EmployeeGroup employeeGroup: groups
              ) {
