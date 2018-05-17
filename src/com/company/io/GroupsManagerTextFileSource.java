@@ -17,15 +17,12 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
 
     @Override
     public void load(EmployeeGroup employeeGroup) {
-        try{
-            File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
-            if(!file.canRead())
-                throw new IOException();
-            Scanner scanner = new Scanner(file);
+        File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
+        try(Scanner scanner = new Scanner(file)){
             Employee[] employees;
             StaffEmployee staffEmployee;
             PartTimeEmployee partTimeEmployee;
-            BusinessTravel[] businessTravels;
+            BusinessTravel businessTravel;
             String _class = scanner.nextLine();
             if(_class.equals("Department")){
                 Department department = (Department) employeeGroup;
@@ -35,33 +32,31 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
                     _class = scanner.nextLine();
                     employees[i].setName(scanner.nextLine());
                     employees[i].setSurname(scanner.nextLine());
-                    employees[i].setJobTitle(scanner.nextLine());
+                    employees[i].setJobTitle(JobTitleEnum.valueOf(scanner.nextLine()));
                     employees[i].setSalary(scanner.nextInt());
                     if(_class.equals("StaffEmployee")){
                         staffEmployee = (StaffEmployee) employees[i];
                         staffEmployee.setBonus(scanner.nextInt());
-                        int travelsSize = scanner.nextInt();
-                        businessTravels = new BusinessTravel[travelsSize];
-                        for(int j = 0; j < travelsSize; j++){
+                        for(int j = 0; j < scanner.nextInt(); j++){
                             int compensation = scanner.nextInt();
                             String destination = scanner.nextLine();
                             LocalDate begin = LocalDate.parse(scanner.nextLine());
                             LocalDate end = LocalDate.parse(scanner.nextLine());
                             String description = scanner.nextLine();
-                            businessTravels[j] = new BusinessTravel(compensation, begin, end,
+                            businessTravel = new BusinessTravel(compensation, begin, end,
                                     description, destination);
-                            staffEmployee.addTravel(businessTravels[j]);
+                            staffEmployee.addTravel(businessTravel);
                         }
                         employees[i] = staffEmployee;
                     }
                     else{
                         partTimeEmployee = (PartTimeEmployee) employees[i];
                         partTimeEmployee.setBonus(scanner.nextInt());
-                        int temp = scanner.nextInt();
                         employees[i] = partTimeEmployee;
                     }
                 }
                 department.setEmployees(employees);
+                department.setSize(employees.length);
                 employeeGroup = department;
             }
             else{
@@ -82,38 +77,37 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
                     _class = scanner.nextLine();
                     employee.setName(scanner.nextLine());
                     employee.setSurname(scanner.nextLine());
-                    employee.setJobTitle(scanner.nextLine());
+                    employee.setJobTitle(JobTitleEnum.valueOf(scanner.nextLine()));
                     employee.setSalary(scanner.nextInt());
                     if(_class.equals("StaffEmployee")){
                         staffEmployee = (StaffEmployee) employee;
                         staffEmployee.setBonus(scanner.nextInt());
-                        int travelsSize = scanner.nextInt();
-                        businessTravels = new BusinessTravel[travelsSize];
-                        for(int j = 0; j < travelsSize; j++){
+                        for(int j = 0; j < scanner.nextInt(); j++){
                             int compensation = scanner.nextInt();
                             String destination = scanner.nextLine();
                             LocalDate begin = LocalDate.parse(scanner.nextLine());
                             LocalDate end = LocalDate.parse(scanner.nextLine());
                             String description = scanner.nextLine();
-                            businessTravels[j] = new BusinessTravel(compensation, begin, end,
+                            businessTravel = new BusinessTravel(compensation, begin, end,
                                     description, destination);
-                            staffEmployee.addTravel(businessTravels[j]);
+                            staffEmployee.addTravel(businessTravel);
                         }
                         project.add(staffEmployee);
                     }
                     else{
                         partTimeEmployee = (PartTimeEmployee) employee;
                         partTimeEmployee.setBonus(scanner.nextInt());
-                        int temp = scanner.nextInt();
                         project.add(partTimeEmployee);
                     }
                 }
                 employeeGroup = project;
             }
-            scanner.close();
         }
         catch (IOException e){
             e.printStackTrace();
+        }
+        catch (IllegalDatesException i){
+            i.printStackTrace();
         }
     }
 
@@ -134,14 +128,14 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
             File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
             file.createNewFile();
             PrintWriter printWriter = new PrintWriter(file);
-            printWriter.println(employeeGroup.getClass().toString());
+            printWriter.println(employeeGroup.getClass().getSimpleName());
             printWriter.println(employeeGroup.size());
             Employee[] employees = employeeGroup.getEmployees();
             StaffEmployee staffEmployee;
             PartTimeEmployee partTimeEmployee;
             BusinessTravel[] businessTravels;
             for(int i = 0; i < employeeGroup.size(); i++){
-                printWriter.println(employees[i].getClass().toString());
+                printWriter.println(employees[i].getClass().getSimpleName());
                 printWriter.println(employees[i].getName());
                 printWriter.println(employees[i].getSurname());
                 printWriter.println(employees[i].getJobTitle());
@@ -162,7 +156,6 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
                 else{
                     partTimeEmployee = (PartTimeEmployee) employees[i];
                     printWriter.print(partTimeEmployee.getBonus());
-                    printWriter.println(0);
                 }
             }
             printWriter.close();
