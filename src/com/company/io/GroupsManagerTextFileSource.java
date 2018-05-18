@@ -113,20 +113,8 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
 
     @Override
     public void store(EmployeeGroup employeeGroup) {
-
-    }
-
-    @Override
-    public void delete(EmployeeGroup employeeGroup) {
-        File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
-        file.delete();
-    }
-
-    @Override
-    public void create(EmployeeGroup employeeGroup) {
         try {
             File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
-            file.createNewFile();
             PrintWriter printWriter = new PrintWriter(file);
             printWriter.println(employeeGroup.getClass().getSimpleName());
             printWriter.println(employeeGroup.size());
@@ -159,6 +147,29 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
                 }
             }
             printWriter.close();
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(EmployeeGroup employeeGroup) {
+        try {
+            File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
+            if(!file.delete())
+                throw new FileNotFoundException();
+        }
+        catch (FileNotFoundException f){
+            f.printStackTrace();
+        }
+    }
+
+    @Override
+    public void create(EmployeeGroup employeeGroup) {
+        try {
+            File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
+            file.createNewFile();
         }
         catch (IOException e){
             e.printStackTrace();

@@ -5,7 +5,17 @@ import com.company.humanResources.*;
 public abstract class EmployeeFactory {
 
     static public EmployeeFactory getEmployeeFactory(OrdersFactoryTypesEnumeration type){
-
+        if(type == OrdersFactoryTypesEnumeration.ORDINARY_GROUPS_FACTORY)
+            return new OrdinaryEmployeeFactory();
+        if(type == OrdersFactoryTypesEnumeration.TEXT_FILE_BASED_GROUPS_FACTORY)
+            return new TextFileBasedEmployeeFactory();
+        if(type == OrdersFactoryTypesEnumeration.BINARY_FILE_BASED_GROUPS_FACTORY)
+            return new BinaryFileBasedEmployeeFactory();
+        if(type == OrdersFactoryTypesEnumeration.SERIALIZED_FILE_BASED_GROUPS_FACTORY)
+            return new SerializedFileBasedEmployeeFactory();
+        if(type == OrdersFactoryTypesEnumeration.SOCKET_BASED_GROUPS_FACTORY)
+            return null;
+        return null;
     }
 
     public EmployeeGroup createDepartment(){

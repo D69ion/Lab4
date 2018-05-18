@@ -98,17 +98,6 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
 
     @Override
     public void store(EmployeeGroup employeeGroup) {
-
-    }
-
-    @Override
-    public void delete(EmployeeGroup employeeGroup) {
-        File file = new File(super.getPath(), employeeGroup.getName() + ".bin");
-        file.delete();
-    }
-
-    @Override
-    public void create(EmployeeGroup employeeGroup) {
         File file = new File(super.getPath(), employeeGroup.getName() + ".bin");
         try(DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file))){
             dataOutputStream.writeUTF(employeeGroup.getClass().getSimpleName());
@@ -140,6 +129,29 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
                     dataOutputStream.write(partTimeEmployee.getBonus());
                 }
             }
+        }
+        catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void delete(EmployeeGroup employeeGroup) {
+        try {
+            File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
+            if(!file.delete())
+                throw new FileNotFoundException();
+        }
+        catch (FileNotFoundException f){
+            f.printStackTrace();
+        }
+    }
+
+    @Override
+    public void create(EmployeeGroup employeeGroup) {
+        try {
+            File file = new File(super.getPath(), employeeGroup.getName() + ".bin");
+            file.createNewFile();
         }
         catch (IOException e){
             e.printStackTrace();
