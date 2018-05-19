@@ -9,6 +9,11 @@ public class ControlledDepartment extends Department{
 
     private static boolean DEFAULT_IS_CHANGED = false;
 
+    public ControlledDepartment(){
+        super();
+        isChanged = DEFAULT_IS_CHANGED;
+    }
+
     public ControlledDepartment(String name){
         super(name);
         isChanged = DEFAULT_IS_CHANGED;

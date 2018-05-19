@@ -9,6 +9,11 @@ public class ControlledProject extends Project {
 
     private static boolean DEFAULT_IS_CHANGED = false;
 
+    public ControlledProject() {
+        super();
+        isChanged = DEFAULT_IS_CHANGED;
+    }
+
     public ControlledProject(String name){
         super(name);
         isChanged = DEFAULT_IS_CHANGED;
