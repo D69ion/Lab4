@@ -4,29 +4,17 @@ import com.company.humanResources.*;
 
 import java.util.Collection;
 
-public class ControlledDepartmentManager extends DepartmentManager {
+public class ControlledProjectManager extends ProjectManager {
     protected Source<EmployeeGroup> employeeGroupSource;
 
     private static Source<EmployeeGroup> DEFAULT_EMPLOYEE_GROUP_SOURCE = null;
 
-    public ControlledDepartmentManager(){
+    public ControlledProjectManager(){
         super();
-        employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
     }
 
-    public ControlledDepartmentManager(String name){
-        super(name);
-        employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
-    }
-
-    public ControlledDepartmentManager(String name, int size){
-        super(name, size);
-        employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
-    }
-
-    public ControlledDepartmentManager(String name, Department[] groups){
-        super(name, groups);
-        employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
+    public ControlledProjectManager(EmployeeGroup[] employeeGroups){
+        super(employeeGroups);
     }
 
     public Source<EmployeeGroup> getEmployeeGroupSource() {
@@ -36,22 +24,21 @@ public class ControlledDepartmentManager extends DepartmentManager {
     public void setEmployeeGroupSource(Source<EmployeeGroup> employeeGroupSource) {
         this.employeeGroupSource = employeeGroupSource;
     }
-
     @Override
     public boolean add(EmployeeGroup employeeGroup) {
-        return employeeGroupSource.create(new ControlledDepartment(employeeGroup.getName(), employeeGroup.getEmployees())) &&
+        return employeeGroupSource.create(new ControlledProject(employeeGroup.getName(), employeeGroup.getEmployees())) &&
                 super.add(employeeGroup);
     }
 
     @Override
     public void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException {
-        employeeGroupSource.create(new ControlledDepartment(employeeGroup.getName(), employeeGroup.getEmployees()));
+        employeeGroupSource.create(new ControlledProject(employeeGroup.getName(), employeeGroup.getEmployees()));
         super.addGroup(employeeGroup);
     }
 
     @Override
     public void add(int index, EmployeeGroup element) {
-        employeeGroupSource.create(new ControlledDepartment(element.getName(), element.getEmployees()));
+        employeeGroupSource.create(new ControlledProject(element.getName(), element.getEmployees()));
         super.add(index, element);
     }
 
@@ -76,7 +63,7 @@ public class ControlledDepartmentManager extends DepartmentManager {
 
     @Override
     public boolean removeGroup(String groupName) {
-        return employeeGroupSource.delete(getEmployeeGroup(groupName)) && super.removeGroup(groupName);
+        return employeeGroupSource.delete(super.getEmployeeGroup(groupName)) && super.removeGroup(groupName);
     }
 
     @Override
@@ -92,9 +79,9 @@ public class ControlledDepartmentManager extends DepartmentManager {
     }
 
     @Override
-    public int removeGroup(EmployeeGroup department) {
-        if(employeeGroupSource.delete(department))
-            return super.removeGroup(department);
+    public int removeGroup(EmployeeGroup project) {
+        if(employeeGroupSource.delete(project))
+            return super.removeGroup(project);
         return 0;
     }
 
@@ -129,7 +116,7 @@ public class ControlledDepartmentManager extends DepartmentManager {
     public void store(){
         EmployeeGroup[] employeeGroups = super.getGroups();
         ControlledDepartment controlledDepartment;
-        for(int i = 0; i < super.getSize(); i++){
+        for(int i = 0; i < super.size(); i++){
             if(employeeGroups[i] instanceof ControlledDepartment){
                 controlledDepartment = (ControlledDepartment) employeeGroups[i];
                 if(controlledDepartment.isChanged){
@@ -141,7 +128,7 @@ public class ControlledDepartmentManager extends DepartmentManager {
 
     public EmployeeGroup[] load(){
         EmployeeGroup[] employeeGroups = super.getGroups();
-        for(int i = 0; i < getSize(); i++){
+        for(int i = 0; i < super.size(); i++){
             employeeGroupSource.load(employeeGroups[i]);
         }
         return employeeGroups;

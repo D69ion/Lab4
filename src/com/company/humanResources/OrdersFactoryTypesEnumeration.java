@@ -1,4 +1,4 @@
-package com.company.io;
+package com.company.humanResources;
 
 public enum OrdersFactoryTypesEnumeration {
     ORDINARY_GROUPS_FACTORY,

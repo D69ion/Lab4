@@ -136,25 +136,25 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
     }
 
     @Override
-    public void delete(EmployeeGroup employeeGroup) {
-        try {
-            File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
-            if(!file.delete())
-                throw new FileNotFoundException();
-        }
-        catch (FileNotFoundException f){
-            f.printStackTrace();
-        }
+    public boolean delete(EmployeeGroup employeeGroup) {
+        File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
+        return file.delete();
     }
 
     @Override
-    public void create(EmployeeGroup employeeGroup) {
+    public boolean create(EmployeeGroup employeeGroup) {
         try {
-            File file = new File(super.getPath(), employeeGroup.getName() + ".bin");
-            file.createNewFile();
+            File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
+            if(file.createNewFile()){
+                store(employeeGroup);
+                return true;
+            }
+            else
+                return false;
         }
         catch (IOException e){
             e.printStackTrace();
         }
+        return false;
     }
 }

@@ -1,6 +1,8 @@
 package com.company.humanResources;
 
-public class PartTimeEmployee extends Employee {
+import java.io.Serializable;
+
+public class PartTimeEmployee extends Employee implements Serializable{
     public PartTimeEmployee(String name, String surname){
         super(name, surname);
     }
