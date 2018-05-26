@@ -1,6 +1,6 @@
 package com.company.humanResources;
 
-public class AlreadyAddedException extends Exception{
+public class AlreadyAddedException extends RuntimeException{
     public AlreadyAddedException(){
         super();
     }

@@ -16,6 +16,7 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
 
     @Override
     public void load(EmployeeGroup employeeGroup) {
+        //todo логикаа просто - очистил employeeGroup, а потом каждого считанного сторудника добавил в нее
         File file = new File(super.getPath(), employeeGroup.getName() + ".bin");
         try(DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file))){
             StaffEmployee staffEmployee;
@@ -26,7 +27,7 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
                 Employee[] employees = new Employee[dataInputStream.readInt()];
                 for(int i = 0; i < employees.length; i++){
                     if(dataInputStream.readUTF().equals("StaffEmployee")){
-                        staffEmployee = (StaffEmployee) employees[i];
+                        staffEmployee = (StaffEmployee) employees[i]; //todo здесь надо создать
                         staffEmployee.setName(dataInputStream.readUTF());
                         staffEmployee.setSurname(dataInputStream.readUTF());
                         staffEmployee.setJobTitle(JobTitleEnum.valueOf(dataInputStream.readUTF()));
@@ -45,7 +46,7 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
                         employees[i] = staffEmployee;
                     }
                     else{
-                        partTimeEmployee = (PartTimeEmployee) employees[i];
+                        partTimeEmployee = (PartTimeEmployee) employees[i];//todo здесь надо создать
                         partTimeEmployee.setName(dataInputStream.readUTF());
                         partTimeEmployee.setSurname(dataInputStream.readUTF());
                         partTimeEmployee.setJobTitle(JobTitleEnum.valueOf(dataInputStream.readUTF()));
@@ -102,11 +103,11 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
         try(DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file))){
             dataOutputStream.writeUTF(employeeGroup.getClass().getSimpleName());
             dataOutputStream.writeInt(employeeGroup.getSize());
-            Employee[] employees = employeeGroup.getEmployees();
+            Employee[] employees = employeeGroup.getEmployees(); //todo нахер тебе массив, когда можно исопльзовать итератор
             StaffEmployee staffEmployee;
             PartTimeEmployee partTimeEmployee;
             BusinessTravel[] businessTravels;
-            for(int i = 0; i < employeeGroup.getSize(); i++){
+            for(int i = 0; i < employeeGroup.getSize(); i++){ //todo вот здесь просто foreach и фсеееееее
                 dataOutputStream.writeUTF(employees[i].getClass().getSimpleName());
                 dataOutputStream.writeUTF(employees[i].getName());
                 dataOutputStream.writeUTF(employees[i].getJobTitle().toString());

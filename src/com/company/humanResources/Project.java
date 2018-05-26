@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
+//todo свой список нада было использовать
 public class Project implements EmployeeGroup, Serializable{
     private String name;
     private ArrayList<Employee> employeesList;

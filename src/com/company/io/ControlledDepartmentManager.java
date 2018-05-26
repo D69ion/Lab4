@@ -4,6 +4,7 @@ import com.company.humanResources.*;
 
 import java.util.Collection;
 
+//todo вместо вызоыва конструктора в методах, используй фабрику, ссылку на которую будет принимать конструктор класса и запоминать ее в поле
 public class ControlledDepartmentManager extends DepartmentManager {
     protected Source<EmployeeGroup> employeeGroupSource;
 

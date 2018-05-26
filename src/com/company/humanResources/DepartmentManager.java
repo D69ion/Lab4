@@ -483,6 +483,7 @@ public class DepartmentManager implements GroupsManager{
         return -1;
     }
 
+    //todo а чем тебе эти методы не угодили?
     @Override
     public ListIterator<EmployeeGroup> listIterator() {
         return null;

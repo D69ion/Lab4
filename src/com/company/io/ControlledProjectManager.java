@@ -4,6 +4,7 @@ import com.company.humanResources.*;
 
 import java.util.Collection;
 
+//todo вместо вызоыва конструктора в методах, используй фабрику, ссылку на которую будет принимать конструктор класса и запоминать ее в поле
 public class ControlledProjectManager extends ProjectManager {
     protected Source<EmployeeGroup> employeeGroupSource;
 
@@ -126,11 +127,10 @@ public class ControlledProjectManager extends ProjectManager {
         }
     }
 
-    public EmployeeGroup[] load(){
+    public void load(){
         EmployeeGroup[] employeeGroups = super.getGroups();
         for(int i = 0; i < super.size(); i++){
             employeeGroupSource.load(employeeGroups[i]);
         }
-        return employeeGroups;
     }
 }

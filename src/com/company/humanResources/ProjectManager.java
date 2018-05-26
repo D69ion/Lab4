@@ -3,6 +3,7 @@ package com.company.humanResources;
 import java.time.LocalDate;
 import java.util.*;
 
+//todo свой список надо было юзать
 public class ProjectManager implements GroupsManager{
     private ArrayList<EmployeeGroup> groups;
     private int size;

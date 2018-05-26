@@ -472,6 +472,7 @@ public class Department implements EmployeeGroup, Serializable{
 
     @Override
     public void clear() {
+	    //todo каждого сотрудника сначчала сделать null + не забывай о size
         this.employees = null;
     }
 
@@ -531,6 +532,7 @@ public class Department implements EmployeeGroup, Serializable{
         return -1;
     }
 
+    //todo а чем тебе эти методы не угодили?
     @Override
     public ListIterator<Employee> listIterator() {
         return null;

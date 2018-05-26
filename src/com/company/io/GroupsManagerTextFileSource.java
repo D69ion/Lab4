@@ -17,6 +17,7 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
 
     @Override
     public void load(EmployeeGroup employeeGroup) {
+        //todo агалогично BinaryFS
         File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
         try(Scanner scanner = new Scanner(file)){
             Employee[] employees;
@@ -122,30 +123,11 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
             StaffEmployee staffEmployee;
             PartTimeEmployee partTimeEmployee;
             BusinessTravel[] businessTravels;
-            for(int i = 0; i < employeeGroup.size(); i++){
-                printWriter.println(employees[i].getClass().getSimpleName());
-                printWriter.println(employees[i].getName());
-                printWriter.println(employees[i].getSurname());
-                printWriter.println(employees[i].getJobTitle());
-                printWriter.print(employees[i].getSalary());
-                if(employees[i] instanceof StaffEmployee){
-                    staffEmployee = (StaffEmployee) employees[i];
-                    printWriter.print(staffEmployee.getBonus());
-                    businessTravels = staffEmployee.getTravels();
-                    printWriter.println(businessTravels.length);
-                    for(int j = 0; j < businessTravels.length; j++){
-                        printWriter.print(businessTravels[j].getCompensation());
-                        printWriter.println(businessTravels[j].getDestination());
-                        printWriter.println(businessTravels[j].getBeginTravel().toString());
-                        printWriter.println(businessTravels[j].getEndTravel().toString());
-                        printWriter.println(businessTravels[j].getDescription());
-                    }
-                }
-                else{
-                    partTimeEmployee = (PartTimeEmployee) employees[i];
-                    printWriter.print(partTimeEmployee.getBonus());
-                }
+            for (Employee emp : employeeGroup) {
+                printWriter.println(emp.getFullString());
+
             }
+
             printWriter.close();
         }
         catch (IOException e){

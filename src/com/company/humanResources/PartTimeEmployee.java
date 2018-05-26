@@ -43,11 +43,12 @@ public class PartTimeEmployee extends Employee implements Serializable{
         return this.getName().equals(partTimeEmployee.getName()) && this.getSurname().equals(partTimeEmployee.getSurname())
                 && this.getJobTitle() == partTimeEmployee.getJobTitle() && this.getSalary() == partTimeEmployee.getSalary();
     }
-
+/*
     @Override
     public int hashCode(){
         /*int hash = super.getName().hashCode() ^ super.getSurname().hashCode() ^
-                super.getJobTitle().hashCode() ^ super.getSalary();*/
+                super.getJobTitle().hashCode() ^ super.getSalary();
         return super.hashCode();
     }
+    */
 }

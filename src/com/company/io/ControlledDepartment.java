@@ -83,6 +83,7 @@ public class ControlledDepartment extends Department{
 
     @Override
     public boolean remove(Object o) {
+        //todo сначала проверь результат remove, а затем от него пляши
         isChanged = true;
         return super.remove(o);
     }

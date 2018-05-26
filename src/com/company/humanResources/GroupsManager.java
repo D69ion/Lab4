@@ -3,6 +3,7 @@ package com.company.humanResources;
 import java.time.LocalDate;
 import java.util.List;
 
+//todo убери дубли методов
 public interface GroupsManager extends List<EmployeeGroup>{
     void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException;
     int getGroupQuantity();
