@@ -7,26 +7,20 @@ import java.util.Collection;
 public class ControlledDepartment extends Department{
     protected boolean isChanged;
 
-    private static boolean DEFAULT_IS_CHANGED = false;
-
     public ControlledDepartment(){
         super();
-        isChanged = DEFAULT_IS_CHANGED;
     }
 
     public ControlledDepartment(String name){
         super(name);
-        isChanged = DEFAULT_IS_CHANGED;
     }
 
     public ControlledDepartment(String name, int size){
         super(name, size);
-        isChanged = DEFAULT_IS_CHANGED;
     }
 
     public ControlledDepartment(String name, Employee[] employees){
         super(name, employees);
-        isChanged = DEFAULT_IS_CHANGED;
     }
 
     protected boolean isChanged() {
@@ -52,64 +46,76 @@ public class ControlledDepartment extends Department{
     }
 
     @Override
-    public void addEmployee(Employee newEmployee) throws AlreadyAddedException {
-        super.addEmployee(newEmployee);
-        isChanged = true;
-    }
-
-    @Override
     public boolean removeEmployee(String name, String surname) {
-        isChanged = true;
-        return super.removeEmployee(name, surname);
-    }
-
-    @Override
-    public boolean removeEmployee(Employee employee) {
-        isChanged = true;
-        return super.removeEmployee(employee);
+        if(super.removeEmployee(name, surname)){
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean removeEmployees(JobTitleEnum jobTitle) {
-        isChanged = true;
-        return super.removeEmployees(jobTitle);
+        if(super.removeEmployees(jobTitle)){
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean add(Employee employee) {
-        isChanged = true;
-        return super.add(employee);
+        if(super.add(employee)) {
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean remove(Object o) {
         //todo сначала проверь результат remove, а затем от него пляши
-        isChanged = true;
-        return super.remove(o);
+        if(super.remove(o)) {
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean addAll(Collection<? extends Employee> c) {
-        isChanged = true;
-        return super.addAll(c);
+        if(super.addAll(c)) {
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean addAll(int index, Collection<? extends Employee> c) {
-        isChanged = true;
-        return super.addAll(index, c);
+        if(super.addAll(index, c)) {
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        isChanged = true;
-        return super.removeAll(c);
+        if(super.removeAll(c)){
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        isChanged = true;
-        return super.retainAll(c);
+        if(super.retainAll(c)) {
+            isChanged = true;
+            return true;
+        }
+        return false;
     }
 
     @Override

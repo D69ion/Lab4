@@ -45,25 +45,8 @@ public class StaffEmployee extends Employee implements BusinessTraveller, Serial
     }
 
     @Override
-    public void addTravel(BusinessTravel travel) throws IllegalDatesException {
-        for (BusinessTravel businessTravel : this.businessTravelList
-                ) {
-            if (travel.getBeginTravel().isAfter(businessTravel.getEndTravel()) || travel.getEndTravel().isBefore(businessTravel.getBeginTravel()))
-                throw new IllegalDatesException("Добавляемая командировка пересекается с другими командировками");
-        }
-        this.businessTravelList.add(travel);
-    }
-
-    @Override
-    public BusinessTravel[] getTravels() {
-        if(businessTravelList.size() == 0)
-            return null;
-        return (BusinessTravel[]) businessTravelList.toArray();
-    }
-
-    @Override
     public boolean isTravelNow() {
-        BusinessTravel[] businessTravels = getTravels();
+        BusinessTravel[] businessTravels = (BusinessTravel[]) toArray();
         BusinessTravel businessTravel = businessTravels[businessTravels.length - 1];
         return LocalDate.now().isAfter(businessTravel.getBeginTravel()) && LocalDate.now().isBefore(businessTravel.getEndTravel());
     }
@@ -83,6 +66,19 @@ public class StaffEmployee extends Employee implements BusinessTraveller, Serial
     }
 
     @Override
+    public String getFullString() {
+        StringBuilder res = new StringBuilder("");
+        res.append("StaffEmployee ").append(super.getName()).append(" ").append(super.getSurname())
+                .append(" ").append(super.getJobTitle().toString()).append(" ").append(super.getSalary())
+                .append(" ").append(getBonus()).append(" ").append(size()).append("\r\n");
+        for (BusinessTravel businessTravel: this.businessTravelList
+                ) {
+            res.append(businessTravel.getFullString()).append("\r\n");
+        }
+        return res.toString();
+    }
+
+    @Override
     public String toString() {
         StringBuilder res = new StringBuilder();
         res.append(super.toString()).append(this.bonus).append("р.").append("\r\n").append("Командировки: \r\n");
@@ -99,7 +95,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller, Serial
         if (!(obj instanceof StaffEmployee)) return false;
         StaffEmployee staffEmployee = (StaffEmployee)obj;
         return super.equals(staffEmployee) && this.bonus == staffEmployee.getBonus() &&
-                this.getTravels().length == staffEmployee.getTravels().length;
+                this.toArray().length == staffEmployee.toArray().length;
     }
 
     @Override
@@ -126,8 +122,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller, Serial
 
     @Override
     public boolean contains(Object o) {
-        BusinessTravel businessTravel = (BusinessTravel) o;
-        return businessTravelList.contains(businessTravel);
+        return businessTravelList.contains(o);
     }
 
     @Override
@@ -148,7 +143,12 @@ public class StaffEmployee extends Employee implements BusinessTraveller, Serial
     @Override
     public boolean add(BusinessTravel travel) {
         try{
-            addTravel(travel);
+            for (BusinessTravel businessTravel : this.businessTravelList
+                    ) {
+                if (travel.getBeginTravel().isAfter(businessTravel.getEndTravel()) || travel.getEndTravel().isBefore(businessTravel.getBeginTravel()))
+                    throw new IllegalDatesException("Добавляемая командировка пересекается с другими командировками");
+            }
+            this.businessTravelList.add(travel);
         }
         catch (IllegalDatesException e) {
             e.printStackTrace();
@@ -158,7 +158,7 @@ public class StaffEmployee extends Employee implements BusinessTraveller, Serial
 
     @Override
     public boolean remove(Object o) {
-        return this.businessTravelList.remove((BusinessTravel) o);
+        return this.businessTravelList.remove(o);
     }
 
     @Override
@@ -185,4 +185,6 @@ public class StaffEmployee extends Employee implements BusinessTraveller, Serial
     public void clear() {
         this.businessTravelList.clear();
     }
+
+
 }

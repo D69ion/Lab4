@@ -7,21 +7,16 @@ import java.util.Collection;
 public class ControlledProject extends Project {
     protected boolean isChanged;
 
-    private static boolean DEFAULT_IS_CHANGED = false;
-
     public ControlledProject() {
         super();
-        isChanged = DEFAULT_IS_CHANGED;
     }
 
     public ControlledProject(String name){
         super(name);
-        isChanged = DEFAULT_IS_CHANGED;
     }
 
     public ControlledProject(String name, Employee[] employees){
         super(name, employees);
-        isChanged = DEFAULT_IS_CHANGED;
     }
 
     public boolean isChanged() {

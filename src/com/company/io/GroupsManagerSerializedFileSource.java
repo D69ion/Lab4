@@ -19,8 +19,13 @@ public class GroupsManagerSerializedFileSource extends GroupsManagerFileSource {
             File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(file));
             EmployeeGroup employeeGroup1 = (EmployeeGroup) objectInputStream.readObject();
-            employeeGroup = employeeGroup1; //todo фигня
             objectInputStream.close();
+            //employeeGroup = employeeGroup1; //todo фигня
+            employeeGroup.clear();
+            for (Employee employee: employeeGroup1
+                 ) {
+                employeeGroup.add(employee);
+            }
         }
         catch (FileNotFoundException f){
             f.printStackTrace();

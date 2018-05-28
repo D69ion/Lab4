@@ -41,23 +41,15 @@ public class Project implements EmployeeGroup, Serializable{
         this.name = name;
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public Employee[] getEmployees(){
-        return (Employee[]) this.employeesList.toArray();
-    }
-
     public Employee[] getSortedEmployees(){
-        Employee[] employees = getEmployees();
+        Employee[] employees = (Employee[]) toArray();
         Arrays.sort(employees);
         return employees;
     }
 
     @Override
     public int getPartTimeEmployeeQuantity() {
-        Employee[] employees = getEmployees();
+        Employee[] employees = (Employee[]) toArray();
         int res = 0;
         for(int i = 0; i < this.size; i++){
             if(employees[i] instanceof PartTimeEmployee){
@@ -69,7 +61,7 @@ public class Project implements EmployeeGroup, Serializable{
 
     @Override
     public int getStaffEmployeeQuantity() {
-        Employee[] employees = getEmployees();
+        Employee[] employees = (Employee[]) toArray();
         int res = 0;
         for(int i = 0; i < this.size; i++){
             if(employees[i] instanceof StaffEmployee){
@@ -81,7 +73,7 @@ public class Project implements EmployeeGroup, Serializable{
 
     @Override
     public int getCurrentTravellersQuantity() {
-        Employee[] employees = getEmployees();
+        Employee[] employees = (Employee[]) toArray();
         int res = 0;
         for(int i = 0; i < this.size; i++){
             if(employees[i] instanceof StaffEmployee){
@@ -95,7 +87,7 @@ public class Project implements EmployeeGroup, Serializable{
 
     @Override
     public Employee[] getCurrentTravellers(LocalDate startDate, LocalDate endDate) {
-        Employee[] employees = getEmployees();
+        Employee[] employees = (Employee[]) toArray();
         Employee[] res = new Employee[getStaffEmployeeQuantity()];
         int count = -1;
         for(int i = 0; i < this.size; i++){
@@ -106,15 +98,6 @@ public class Project implements EmployeeGroup, Serializable{
             }
         }
         return res;
-    }
-
-    public void addEmployee(Employee newEmployee) throws AlreadyAddedException {
-        for (Employee employee: this.employeesList
-             ) {
-            if(employee.equals(newEmployee))
-                throw new AlreadyAddedException("Добавляемый сотрудник уже есть в массиве");
-        }
-        this.employeesList.add(newEmployee);
     }
 
     public Employee getEmployee(String name, String surname) {
@@ -137,11 +120,6 @@ public class Project implements EmployeeGroup, Serializable{
         return false;
     }
 
-    public boolean removeEmployee(Employee employee){
-        this.employeesList.remove(employee);
-        return true;
-    }
-
     public Employee getEmployeeWithMaxSalary(){
         Employee resEmployee = null;
         int max = 0;
@@ -156,7 +134,7 @@ public class Project implements EmployeeGroup, Serializable{
     @Override
     public String toString(){
         StringBuilder res = new StringBuilder();
-        res.append("Project ").append(getName()).append(": ").append(getSize()).append("\r\n");
+        res.append("Project ").append(getName()).append(": ").append(size()).append("\r\n");
         for (Employee employee: this.employeesList
              ) {
             res.append(employee.toString()).append("\r\n");
@@ -171,7 +149,7 @@ public class Project implements EmployeeGroup, Serializable{
         if(!(obj instanceof Project)) return false;
         Project project = (Project)obj;
         if(!(this.name.equals(project.getName()))) return false;
-        if(!(this.size == project.getSize())) return false;
+        if(!(this.size == project.size())) return false;
         int temp = 0;
         for (Employee employee: this.employeesList
              ) {

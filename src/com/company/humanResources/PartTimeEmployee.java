@@ -1,6 +1,7 @@
 package com.company.humanResources;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 public class PartTimeEmployee extends Employee implements Serializable{
     public PartTimeEmployee(String name, String surname){
@@ -19,6 +20,14 @@ public class PartTimeEmployee extends Employee implements Serializable{
     @Override
     public void setBonus(int bonus) {
 
+    }
+
+    @Override
+    public String getFullString() {
+        StringBuilder res = new StringBuilder("");
+        res.append("PartTime ").append(super.getName()).append(" ").append(super.getSurname()).append(" ")
+                .append(super.getJobTitle().toString()).append(" ").append(super.getSalary());
+        return res.toString();
     }
 
     @Override
@@ -43,12 +52,4 @@ public class PartTimeEmployee extends Employee implements Serializable{
         return this.getName().equals(partTimeEmployee.getName()) && this.getSurname().equals(partTimeEmployee.getSurname())
                 && this.getJobTitle() == partTimeEmployee.getJobTitle() && this.getSalary() == partTimeEmployee.getSalary();
     }
-/*
-    @Override
-    public int hashCode(){
-        /*int hash = super.getName().hashCode() ^ super.getSurname().hashCode() ^
-                super.getJobTitle().hashCode() ^ super.getSalary();
-        return super.hashCode();
-    }
-    */
 }

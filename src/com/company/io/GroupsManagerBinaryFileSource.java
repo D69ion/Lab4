@@ -19,19 +19,16 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
         //todo логикаа просто - очистил employeeGroup, а потом каждого считанного сторудника добавил в нее
         File file = new File(super.getPath(), employeeGroup.getName() + ".bin");
         try(DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file))){
+            employeeGroup.clear();
             StaffEmployee staffEmployee;
             PartTimeEmployee partTimeEmployee;
             BusinessTravel businessTravel;
             if(dataInputStream.readUTF().equals("Department")){
                 Department department = (Department) employeeGroup;
-                Employee[] employees = new Employee[dataInputStream.readInt()];
-                for(int i = 0; i < employees.length; i++){
+                for(int i = 0; i < dataInputStream.readInt(); i++){
                     if(dataInputStream.readUTF().equals("StaffEmployee")){
-                        staffEmployee = (StaffEmployee) employees[i]; //todo здесь надо создать
-                        staffEmployee.setName(dataInputStream.readUTF());
-                        staffEmployee.setSurname(dataInputStream.readUTF());
-                        staffEmployee.setJobTitle(JobTitleEnum.valueOf(dataInputStream.readUTF()));
-                        staffEmployee.setSalary(dataInputStream.readInt());
+                        staffEmployee = new StaffEmployee(dataInputStream.readUTF(), dataInputStream.readUTF(),
+                                JobTitleEnum.valueOf(dataInputStream.readUTF()), dataInputStream.readInt()); //todo здесь надо создать
                         staffEmployee.setBonus(dataInputStream.readInt());
                         for(int j = 0; j < dataInputStream.readInt(); j++){
                             int compensation = dataInputStream.readInt();
@@ -41,23 +38,16 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
                             String description = dataInputStream.readUTF();
                             businessTravel = new BusinessTravel(compensation, begin, end,
                                     description, destination);
-                            staffEmployee.addTravel(businessTravel);
+                            staffEmployee.add(businessTravel);
                         }
-                        employees[i] = staffEmployee;
+                        employeeGroup.add(staffEmployee);
                     }
                     else{
-                        partTimeEmployee = (PartTimeEmployee) employees[i];//todo здесь надо создать
-                        partTimeEmployee.setName(dataInputStream.readUTF());
-                        partTimeEmployee.setSurname(dataInputStream.readUTF());
-                        partTimeEmployee.setJobTitle(JobTitleEnum.valueOf(dataInputStream.readUTF()));
-                        partTimeEmployee.setSalary(dataInputStream.readInt());
-                        partTimeEmployee.setBonus(dataInputStream.readInt());
-                        employees[i] = partTimeEmployee;
+                        partTimeEmployee = new PartTimeEmployee(dataInputStream.readUTF(), dataInputStream.readUTF(),
+                                JobTitleEnum.valueOf(dataInputStream.readUTF()), dataInputStream.readInt());//todo здесь надо создать
+                        employeeGroup.add(partTimeEmployee);
                     }
                 }
-                department.setEmployees(employees);
-                department.setSize(employees.length);
-                employeeGroup = department;
             }
             else{
                 Project project = (Project) employeeGroup;
@@ -75,25 +65,20 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
                             String description = dataInputStream.readUTF();
                             businessTravel = new BusinessTravel(compensation, begin, end,
                                     description, destination);
-                            staffEmployee.addTravel(businessTravel);
+                            staffEmployee.add(businessTravel);
                         }
-                        project.add(staffEmployee);
+                        employeeGroup.add(staffEmployee);
                     }
                     else{
                         partTimeEmployee = new PartTimeEmployee(dataInputStream.readUTF(), dataInputStream.readUTF(),
                                 JobTitleEnum.valueOf(dataInputStream.readUTF()), dataInputStream.readInt());
-                        partTimeEmployee.setBonus(dataInputStream.readInt());
-                        project.add(partTimeEmployee);
+                        employeeGroup.add(partTimeEmployee);
                     }
                 }
-                employeeGroup = project;
             }
         }
         catch (IOException e){
             e.printStackTrace();
-        }
-        catch (IllegalDatesException i){
-            i.printStackTrace();
         }
     }
 
@@ -102,32 +87,27 @@ public class GroupsManagerBinaryFileSource extends GroupsManagerFileSource {
         File file = new File(super.getPath(), employeeGroup.getName() + ".bin");
         try(DataOutputStream dataOutputStream = new DataOutputStream(new FileOutputStream(file))){
             dataOutputStream.writeUTF(employeeGroup.getClass().getSimpleName());
-            dataOutputStream.writeInt(employeeGroup.getSize());
-            Employee[] employees = employeeGroup.getEmployees(); //todo нахер тебе массив, когда можно исопльзовать итератор
+            dataOutputStream.writeInt(employeeGroup.size());
+            //Employee[] employees = (Employee[]) employeeGroup.toArray(); //todo нахер тебе массив, когда можно исопльзовать итератор
             StaffEmployee staffEmployee;
-            PartTimeEmployee partTimeEmployee;
-            BusinessTravel[] businessTravels;
-            for(int i = 0; i < employeeGroup.getSize(); i++){ //todo вот здесь просто foreach и фсеееееее
-                dataOutputStream.writeUTF(employees[i].getClass().getSimpleName());
-                dataOutputStream.writeUTF(employees[i].getName());
-                dataOutputStream.writeUTF(employees[i].getJobTitle().toString());
-                dataOutputStream.write(employees[i].getSalary());
-                if(employees[i] instanceof StaffEmployee){
-                    staffEmployee = (StaffEmployee) employees[i];
+            for (Employee employee: employeeGroup //todo вот здесь просто foreach и фсеееееее
+                 ) {
+                dataOutputStream.writeUTF(employee.getClass().getSimpleName());
+                dataOutputStream.writeUTF(employee.getName());
+                dataOutputStream.writeUTF(employee.getJobTitle().toString());
+                dataOutputStream.write(employee.getSalary());
+                if(employee instanceof StaffEmployee){
+                    staffEmployee = (StaffEmployee) employee;
                     dataOutputStream.write(staffEmployee.getBonus());
-                    businessTravels = staffEmployee.getTravels();
-                    dataOutputStream.write(businessTravels.length);
-                    for(int j = 0; j < businessTravels.length; j++){
-                        dataOutputStream.write(businessTravels[j].getCompensation());
-                        dataOutputStream.writeUTF(businessTravels[j].getDestination());
-                        dataOutputStream.writeUTF(businessTravels[j].getBeginTravel().toString());
-                        dataOutputStream.writeUTF(businessTravels[j].getEndTravel().toString());
-                        dataOutputStream.writeUTF(businessTravels[j].getDescription());
+                    dataOutputStream.write(staffEmployee.size());
+                    for (BusinessTravel businessTravel: staffEmployee
+                         ) {
+                        dataOutputStream.write(businessTravel.getCompensation());
+                        dataOutputStream.writeUTF(businessTravel.getDestination());
+                        dataOutputStream.writeUTF(businessTravel.getBeginTravel().toString());
+                        dataOutputStream.writeUTF(businessTravel.getEndTravel().toString());
+                        dataOutputStream.writeUTF(businessTravel.getDescription());
                     }
-                }
-                else{
-                    partTimeEmployee = (PartTimeEmployee) employees[i];
-                    dataOutputStream.write(partTimeEmployee.getBonus());
                 }
             }
         }

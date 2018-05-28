@@ -56,6 +56,14 @@ public final class BusinessTravel {
         return (int) ChronoUnit.DAYS.between(this.beginTravel, this.endTravel);
     }
 
+    public String getFullString(){
+        StringBuilder res = new StringBuilder("");
+        res.append(compensation).append("/*").append(beginTravel.toString()).append("/*")
+                .append(endTravel.toString()).append("/*").append(description).append("/*")
+                .append(destination).append("*/");
+        return res.toString();
+    }
+
     @Override
     public String toString(){
         String res = "";//String.format("%s %tF – %tF (%d). %s", destination, beginTravel, endTravel, compensation, description);

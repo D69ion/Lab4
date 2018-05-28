@@ -54,25 +54,11 @@ public class DepartmentManager implements GroupsManager{
     }
 
     @Override
-    public int getGroupQuantity() {
-        return getSize();
-    }
-
-    @Override
-    public int getEmployeesQuantity() {
-        return getEmployeesCount();
-    }
-
-    @Override
-    public EmployeeGroup[] getGroups() {
-        return this.groups;
-    }
-
-    public int getEmployeesCount(){
+    public int getEmployeesQuantity(){
         int res = 0;
         for (EmployeeGroup d: groups
              ) {
-            res += d.getSize();
+            res += d.size();
         }
         return res;
     }
@@ -82,37 +68,13 @@ public class DepartmentManager implements GroupsManager{
         int res = 0;
         for (EmployeeGroup d: groups
                 ) {
-            for (Employee e: d.getEmployees()
+            for (Employee e: (Employee[]) d.toArray()
                  ) {
                 if(e.getJobTitle() == jobTitle)
                     res++;
             }
         }
         return res;
-    }
-
-    @Override
-    public void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException {
-        for(int i = 0; i < this.size; i++){
-            if(employeeGroup.equals(this.groups[i]))
-                throw new AlreadyAddedException("Добавляемая группа уже есть в массиве");
-        }
-        if (size >= groups.length){
-            EmployeeGroup[] resDepartments = new Department[groups.length * 2];
-            System.arraycopy(groups, 0, resDepartments, 0, groups.length);
-            resDepartments[groups.length] = employeeGroup;
-            groups = resDepartments;
-            this.size++;
-        }
-        else{
-            for (int i = 0; i < groups.length; i++){
-                if (groups[i] == null){
-                    groups[i] = employeeGroup;
-                    this.size++;
-                    break;
-                }
-            }
-        }
     }
 
     @Override
@@ -137,27 +99,6 @@ public class DepartmentManager implements GroupsManager{
         return true;
     }
 
-    @Override
-    public int removeGroup(EmployeeGroup department){
-       for(int i = 0; i < this.size; i++){
-           if(this.groups[i].equals(department)){
-               System.arraycopy(groups, i + 1, groups, i, size - i - 1);
-               for (int j = size - 1; j > -1; j--){
-                   if(groups[j] == null)
-                       continue;
-                   else {
-                       groups[j] = null;
-                       size--;
-                       break;
-                   }
-               }
-               this.size--;
-               return this.size;
-           }
-       }
-        return this.size;
-    }
-
     public EmployeeGroup getEmployeeGroup(String groupName){
         for (EmployeeGroup d: groups
                 ) {
@@ -175,7 +116,7 @@ public class DepartmentManager implements GroupsManager{
              ) {
             if (d == null)
                 continue;
-            for (Employee e: d.getEmployees()
+            for (Employee e: (Employee[]) d.toArray()
                  ) {
                 if(e.getSalary() > max) {
                     max = e.getSalary();
@@ -190,7 +131,7 @@ public class DepartmentManager implements GroupsManager{
     public Department getEmployeesGroup(String name, String surname){
         for (EmployeeGroup d: groups
                 ) {
-            for (Employee e: d.getEmployees()
+            for (Employee e: (Employee[]) d.toArray()
                     ) {
                 if (e.getName().equals(name))
                     if (e.getSurname().equals(surname))
@@ -205,7 +146,7 @@ public class DepartmentManager implements GroupsManager{
         Employee[] employees;
         int res = 0;
         for(int i = 0; i < this.size; i++) {
-            employees = this.groups[i].getEmployees();
+            employees = (Employee[]) this.groups[i].toArray();
             for (int j = 0; j < this.size; j++) {
                 if (employees[j] instanceof PartTimeEmployee) {
                     res++;
@@ -220,7 +161,7 @@ public class DepartmentManager implements GroupsManager{
         Employee[] employees;
         int res = 0;
         for(int i = 0; i < this.size; i++) {
-            employees = this.groups[i].getEmployees();
+            employees = (Employee[]) this.groups[i].toArray();
             for (int j = 0; j < this.size; j++) {
                 if (employees[j] instanceof StaffEmployee) {
                     res++;
@@ -235,7 +176,7 @@ public class DepartmentManager implements GroupsManager{
         Employee[] employees;
         int res = 0;
         for(int i = 0; i < this.size; i++) {
-            employees = this.groups[i].getEmployees();
+            employees = (Employee[]) this.groups[i].toArray();
             for (int j = 0; j < this.size; j++) {
                 if (employees[j] instanceof PartTimeEmployee) {
                     if (((StaffEmployee) (employees[j])).isTravelNow()) {
@@ -253,7 +194,7 @@ public class DepartmentManager implements GroupsManager{
         Employee[] employees;
         int count = -1;
         for(int i = 0; i < this.size; i++) {
-            employees = this.groups[i].getEmployees();
+            employees = (Employee[]) this.groups[i].toArray();
             for (int j = 0; j < this.size; j++) {
                 if (employees[j] instanceof PartTimeEmployee) {
                     if (((StaffEmployee) (employees[j])).getTravelDaysQuantityFromTimeLapse(startDate, endDate) > 0) {
@@ -321,9 +262,28 @@ public class DepartmentManager implements GroupsManager{
     }
 
     @Override
-    public boolean add(EmployeeGroup employee) {
+    public boolean add(EmployeeGroup employeeGroup) {
         try {
-            this.addGroup(employee);
+            for(int i = 0; i < this.size; i++){
+                if(employeeGroup.equals(this.groups[i]))
+                    throw new AlreadyAddedException("Добавляемая группа уже есть в массиве");
+            }
+            if (size >= groups.length){
+                EmployeeGroup[] resDepartments = new Department[groups.length * 2];
+                System.arraycopy(groups, 0, resDepartments, 0, groups.length);
+                resDepartments[groups.length] = employeeGroup;
+                groups = resDepartments;
+                this.size++;
+            }
+            else{
+                for (int i = 0; i < groups.length; i++){
+                    if (groups[i] == null){
+                        groups[i] = employeeGroup;
+                        this.size++;
+                        break;
+                    }
+                }
+            }
         }
         catch (AlreadyAddedException e){
             e.printStackTrace();
@@ -333,8 +293,23 @@ public class DepartmentManager implements GroupsManager{
 
     @Override
     public boolean remove(Object o) {
-        if(removeGroup((EmployeeGroup) o) > 0)
-            return true;
+        Department department = (Department) o;
+        for(int i = 0; i < this.size; i++){
+            if(this.groups[i].equals(department)){
+                System.arraycopy(groups, i + 1, groups, i, size - i - 1);
+                for (int j = size - 1; j > -1; j--){
+                    if(groups[j] == null)
+                        continue;
+                    else {
+                        groups[j] = null;
+                        size--;
+                        break;
+                    }
+                }
+                this.size--;
+                return true;
+            }
+        }
         return false;
     }
 
@@ -358,7 +333,7 @@ public class DepartmentManager implements GroupsManager{
         EmployeeGroup[] employeeGroups = (EmployeeGroup[]) c.toArray();
         try {
             for (int i = 0; i < employeeGroups.length; i++) {
-                this.addGroup(employeeGroups[i]);
+                this.add(employeeGroups[i]);
             }
         }
         catch (AlreadyAddedException e){
@@ -486,16 +461,133 @@ public class DepartmentManager implements GroupsManager{
     //todo а чем тебе эти методы не угодили?
     @Override
     public ListIterator<EmployeeGroup> listIterator() {
-        return null;
+        return new ListIterator<EmployeeGroup>() {
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                if(index < size)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public EmployeeGroup next() {
+                if(this.hasNext()){
+                    return groups[index++];
+                }
+                return null;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                if(index >= 0)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public EmployeeGroup previous() {
+                if(this.hasNext()){
+                    return groups[index--];
+                }
+                return null;
+            }
+
+            @Override
+            public int nextIndex() {
+                return index++;
+            }
+
+            @Override
+            public int previousIndex() {
+                return index--;
+            }
+
+            @Override
+            public void remove() {
+                groups[index] = null;
+            }
+
+            @Override
+            public void set(EmployeeGroup employeeGroup) {
+                groups[index] = employeeGroup;
+            }
+
+            @Override
+            public void add(EmployeeGroup employeeGroup) {
+                DepartmentManager.this.add(employeeGroup);
+            }
+        };
     }
 
     @Override
     public ListIterator<EmployeeGroup> listIterator(int index) {
-        return null;
-    }
+        return new ListIterator<EmployeeGroup>() {
+            int newIndex = index;
+
+            @Override
+            public boolean hasNext() {
+                if(newIndex < size)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public EmployeeGroup next() {
+                if(this.hasNext()){
+                    return groups[newIndex++];
+                }
+                return null;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                if(newIndex >= 0)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public EmployeeGroup previous() {
+                if(this.hasNext()){
+                    return groups[newIndex--];
+                }
+                return null;
+            }
+
+            @Override
+            public int nextIndex() {
+                return newIndex++;
+            }
+
+            @Override
+            public int previousIndex() {
+                return newIndex--;
+            }
+
+            @Override
+            public void remove() {
+                groups[newIndex] = null;
+            }
+
+            @Override
+            public void set(EmployeeGroup employeeGroup) {
+                groups[newIndex] = employeeGroup;
+            }
+
+            @Override
+            public void add(EmployeeGroup employeeGroup) {
+                DepartmentManager.this.add(employeeGroup);
+            }
+        };    }
 
     @Override
-    public List<EmployeeGroup> subList(int fromIndex, int toIndex) {
-        return null;
+    public DepartmentManager subList(int fromIndex, int toIndex) {
+        DepartmentManager departmentManager = new DepartmentManager(DepartmentManager.this.name, toIndex - fromIndex);
+        for(int i = fromIndex; i < toIndex; i++){
+            departmentManager.add(DepartmentManager.this.groups[i]);
+        }
+        return departmentManager;
     }
 }

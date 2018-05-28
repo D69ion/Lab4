@@ -66,6 +66,8 @@ public abstract class Employee implements Comparable<Employee>, Serializable{
 
     public abstract void setBonus(int bonus);
 
+    public abstract String getFullString();
+
     @Override
     public String toString(){
         String res = "";// String.format("%s %s, %s, %dр.", surname, name, jobTitle.toString(), salary);

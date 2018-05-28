@@ -38,15 +38,6 @@ public class Department implements EmployeeGroup, Serializable{
         return name;
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public Employee[] getEmployees() {
-        Employee[] resEmployees = removeNullElements(employees);
-        return resEmployees;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -65,54 +56,6 @@ public class Department implements EmployeeGroup, Serializable{
                 return employees[i];
             }
         return null;
-    }
-
-    public void addEmployee(Employee newEmployee)throws AlreadyAddedException{
-        if(newEmployee == null)
-            return;
-        for(int i = 0; i < this.size; i++){
-            if(newEmployee.equals(this.employees[i])){
-                throw new AlreadyAddedException("Сотрудник уже есть в массиве");
-            }
-        }
-        if (size >= employees.length) {
-            Employee[] resEmployees = new Employee[employees.length * 2];
-            System.arraycopy(employees, 0, resEmployees, 0, employees.length);
-            resEmployees[employees.length] = newEmployee;
-            this.employees = resEmployees;
-            this.size++;
-        } else {
-            for (int i = size - 1; i < employees.length; i++) {
-                if (employees[i] == null) {
-                    employees[i] = newEmployee;
-                    this.size++;
-                    break;
-                }
-            }
-        }
-    }
-
-    public boolean removeEmployee(Employee employee){
-        int temp = -1;
-        for (int i = 0; i < size; i++){
-            if (employees[i].equals(employee)) {
-                temp = i;
-                break;
-            }
-        }
-        if(temp == -1)
-            return false;
-        System.arraycopy(employees, temp + 1, employees, temp, size - temp - 1);
-        for (int i = size - 1; i > -1; i--){
-            if(employees[i] == null)
-                continue;
-            else {
-                employees[i] = null;
-                size--;
-                break;
-            }
-        }
-        return true;
     }
 
     public boolean removeEmployee(String name, String surname) {
@@ -180,7 +123,7 @@ public class Department implements EmployeeGroup, Serializable{
     }
 
     public Employee[] getSortedEmployees(){
-        Employee[] resEmployees = getEmployees();
+        Employee[] resEmployees = (Employee[]) toArray();
         Arrays.sort(resEmployees, new Comparator<Employee>() {
             @Override
             public int compare(Employee o1, Employee o2) {
@@ -254,7 +197,7 @@ public class Department implements EmployeeGroup, Serializable{
     public Employee[] businessTravellers(){
         Employee[] res = new Employee[this.size];
         for(int i = 0; i < this.size; i++){
-            if(((StaffEmployee)this.employees[i]).getTravels().length != 0){
+            if(((StaffEmployee)this.employees[i]).toArray().length != 0){
                 res[i] = this.employees[i];
             }
         }
@@ -277,9 +220,9 @@ public class Department implements EmployeeGroup, Serializable{
         if(!(obj instanceof Department)) return false;
         Department department = (Department)obj;
         if(!(this.name.equals(department.getName()))) return false;
-        if(!(this.size == department.getSize())) return false;
+        if(!(this.size == department.size())) return false;
         int temp = 0;
-        Employee[] departmentEmployees = department.getEmployees();
+        Employee[] departmentEmployees = (Employee[]) department.toArray();
         for(int i = 0; i < this.size; i++){
             for(int j = 0; j < this.size; j++){
                 if(this.employees[i].equals(departmentEmployees[j]))
@@ -371,9 +314,33 @@ public class Department implements EmployeeGroup, Serializable{
     }
 
     @Override
-    public boolean add(Employee employee) {
+    public boolean add(Employee newEmployee) {
         try {
-            this.addEmployee(employee);
+            if(newEmployee == null)
+                throw new NullPointerException();
+            for(int i = 0; i < this.size; i++){
+                if(newEmployee.equals(this.employees[i])){
+                    throw new AlreadyAddedException("Сотрудник уже есть в массиве");
+                }
+            }
+            if (size >= employees.length) {
+                Employee[] resEmployees = new Employee[employees.length * 2];
+                System.arraycopy(employees, 0, resEmployees, 0, employees.length);
+                resEmployees[employees.length] = newEmployee;
+                this.employees = resEmployees;
+                this.size++;
+            } else {
+                for (int i = size - 1; i < employees.length; i++) {
+                    if (employees[i] == null) {
+                        employees[i] = newEmployee;
+                        this.size++;
+                        break;
+                    }
+                }
+            }
+        }
+        catch (NullPointerException n){
+            n.printStackTrace();
         }
         catch (AlreadyAddedException e){
             e.printStackTrace();
@@ -383,7 +350,27 @@ public class Department implements EmployeeGroup, Serializable{
 
     @Override
     public boolean remove(Object o) {
-        return removeEmployee((Employee) o);
+	    Employee employee = (Employee) o;
+        int temp = -1;
+        for (int i = 0; i < size; i++){
+            if (employees[i].equals(employee)) {
+                temp = i;
+                break;
+            }
+        }
+        if(temp == -1)
+            return false;
+        System.arraycopy(employees, temp + 1, employees, temp, size - temp - 1);
+        for (int i = size - 1; i > -1; i--){
+            if(employees[i] == null)
+                continue;
+            else {
+                employees[i] = null;
+                size--;
+                break;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -406,7 +393,7 @@ public class Department implements EmployeeGroup, Serializable{
         Employee[] employees = (Employee[]) c.toArray();
         try {
             for (int i = 0; i < employees.length; i++) {
-                this.addEmployee(employees[i]);
+                this.add(employees[i]);
             }
         }
         catch (AlreadyAddedException e){
@@ -473,7 +460,12 @@ public class Department implements EmployeeGroup, Serializable{
     @Override
     public void clear() {
 	    //todo каждого сотрудника сначчала сделать null + не забывай о size
+        for (Employee employee: this.employees
+             ) {
+            employee = null;
+        }
         this.employees = null;
+        this.size = 0;
     }
 
     @Override
@@ -535,16 +527,134 @@ public class Department implements EmployeeGroup, Serializable{
     //todo а чем тебе эти методы не угодили?
     @Override
     public ListIterator<Employee> listIterator() {
-        return null;
+        return new ListIterator<Employee>() {
+            int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                if(index < size)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public Employee next() {
+                if(this.hasNext()){
+                    return employees[index++];
+                }
+                return null;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                if(index >= 0)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public Employee previous() {
+                if(this.hasNext()){
+                    return employees[index--];
+                }
+                return null;
+            }
+
+            @Override
+            public int nextIndex() {
+                return index++;
+            }
+
+            @Override
+            public int previousIndex() {
+                return index--;
+            }
+
+            @Override
+            public void remove() {
+                employees[index] = null;
+            }
+
+            @Override
+            public void set(Employee employee) {
+                employees[index] = employee;
+            }
+
+            @Override
+            public void add(Employee employee) {
+                Department.this.add(employee);
+            }
+        };
     }
 
     @Override
     public ListIterator<Employee> listIterator(int index) {
-        return null;
+        return new ListIterator<Employee>() {
+            int newIndex = index;
+
+            @Override
+            public boolean hasNext() {
+                if(newIndex < size)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public Employee next() {
+                if(this.hasNext()){
+                    return employees[newIndex++];
+                }
+                return null;
+            }
+
+            @Override
+            public boolean hasPrevious() {
+                if(newIndex >= 0)
+                    return true;
+                return false;
+            }
+
+            @Override
+            public Employee previous() {
+                if(this.hasNext()){
+                    return employees[newIndex--];
+                }
+                return null;
+            }
+
+            @Override
+            public int nextIndex() {
+                return newIndex++;
+            }
+
+            @Override
+            public int previousIndex() {
+                return newIndex--;
+            }
+
+            @Override
+            public void remove() {
+                employees[newIndex] = null;
+            }
+
+            @Override
+            public void set(Employee employee) {
+                employees[newIndex] = employee;
+            }
+
+            @Override
+            public void add(Employee employee) {
+                Department.this.add(employee);
+            }
+        };
     }
 
     @Override
-    public List<Employee> subList(int fromIndex, int toIndex) {
-        return null;
+    public Department subList(int fromIndex, int toIndex) {
+	    Department department = new Department(Department.this.name, toIndex - fromIndex);
+	    for(int i = fromIndex; i < toIndex; i++){
+            department.add(Department.this.employees[i]);
+        }
+        return department;
     }
 }

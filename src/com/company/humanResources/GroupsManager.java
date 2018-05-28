@@ -5,12 +5,8 @@ import java.util.List;
 
 //todo убери дубли методов
 public interface GroupsManager extends List<EmployeeGroup>{
-    void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException;
-    int getGroupQuantity();
-    int removeGroup(EmployeeGroup employeeGroup);
     boolean removeGroup(String groupName);
     EmployeeGroup getEmployeeGroup(String groupName);
-    EmployeeGroup[] getGroups();
     int getEmployeesQuantity();
     int getEmployees(JobTitleEnum jobTitle);
     Employee employeeWithMaxSalary();

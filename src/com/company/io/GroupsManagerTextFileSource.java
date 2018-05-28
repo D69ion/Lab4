@@ -19,26 +19,19 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
     public void load(EmployeeGroup employeeGroup) {
         //todo агалогично BinaryFS
         File file = new File(super.getPath(), employeeGroup.getName() + ".dat");
-        try(Scanner scanner = new Scanner(file)){
-            Employee[] employees;
+        try (Scanner scanner = new Scanner(file)) {
+            employeeGroup.clear();
             StaffEmployee staffEmployee;
             PartTimeEmployee partTimeEmployee;
             BusinessTravel businessTravel;
-            String _class = scanner.nextLine();
-            if(_class.equals("Department")){
-                Department department = (Department) employeeGroup;
+            if (scanner.nextLine().equals("Department")) {
                 int size = scanner.nextInt();
-                employees = new Employee[size];
-                for(int i = 0; i < size; i++){
-                    _class = scanner.nextLine();
-                    employees[i].setName(scanner.nextLine());
-                    employees[i].setSurname(scanner.nextLine());
-                    employees[i].setJobTitle(JobTitleEnum.valueOf(scanner.nextLine()));
-                    employees[i].setSalary(scanner.nextInt());
-                    if(_class.equals("StaffEmployee")){
-                        staffEmployee = (StaffEmployee) employees[i];
+                for (int i = 0; i < size; i++) {
+                    if (scanner.nextLine().equals("StaffEmployee")) {
+                        staffEmployee = new StaffEmployee(scanner.nextLine(), scanner.nextLine(),
+                                JobTitleEnum.valueOf(scanner.nextLine()), scanner.nextInt());
                         staffEmployee.setBonus(scanner.nextInt());
-                        for(int j = 0; j < scanner.nextInt(); j++){
+                        for (int j = 0; j < scanner.nextInt(); j++) {
                             int compensation = scanner.nextInt();
                             String destination = scanner.nextLine();
                             LocalDate begin = LocalDate.parse(scanner.nextLine());
@@ -46,44 +39,23 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
                             String description = scanner.nextLine();
                             businessTravel = new BusinessTravel(compensation, begin, end,
                                     description, destination);
-                            staffEmployee.addTravel(businessTravel);
+                            staffEmployee.add(businessTravel);
                         }
-                        employees[i] = staffEmployee;
-                    }
-                    else{
-                        partTimeEmployee = (PartTimeEmployee) employees[i];
-                        partTimeEmployee.setBonus(scanner.nextInt());
-                        employees[i] = partTimeEmployee;
+                        employeeGroup.add(staffEmployee);
+                    } else {
+                        partTimeEmployee = new PartTimeEmployee(scanner.nextLine(), scanner.nextLine(),
+                                JobTitleEnum.valueOf(scanner.nextLine()), scanner.nextInt());
+                        employeeGroup.add(partTimeEmployee);
                     }
                 }
-                department.setEmployees(employees);
-                department.setSize(employees.length);
-                employeeGroup = department;
-            }
-            else{
-                Project project = (Project) employeeGroup;
+            } else {
                 int size = scanner.nextInt();
-                Employee employee = new Employee() {
-                    @Override
-                    public int getBonus() {
-                        return 0;
-                    }
-
-                    @Override
-                    public void setBonus(int bonus) {
-
-                    }
-                };
-                for(int i = 0; i < size; i++){
-                    _class = scanner.nextLine();
-                    employee.setName(scanner.nextLine());
-                    employee.setSurname(scanner.nextLine());
-                    employee.setJobTitle(JobTitleEnum.valueOf(scanner.nextLine()));
-                    employee.setSalary(scanner.nextInt());
-                    if(_class.equals("StaffEmployee")){
-                        staffEmployee = (StaffEmployee) employee;
+                for (int i = 0; i < size; i++) {
+                    if (scanner.nextLine().equals("StaffEmployee")) {
+                        staffEmployee = new StaffEmployee(scanner.nextLine(), scanner.nextLine(),
+                                JobTitleEnum.valueOf(scanner.nextLine()), scanner.nextInt());
                         staffEmployee.setBonus(scanner.nextInt());
-                        for(int j = 0; j < scanner.nextInt(); j++){
+                        for (int j = 0; j < scanner.nextInt(); j++) {
                             int compensation = scanner.nextInt();
                             String destination = scanner.nextLine();
                             LocalDate begin = LocalDate.parse(scanner.nextLine());
@@ -91,24 +63,19 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
                             String description = scanner.nextLine();
                             businessTravel = new BusinessTravel(compensation, begin, end,
                                     description, destination);
-                            staffEmployee.addTravel(businessTravel);
+                            staffEmployee.add(businessTravel);
                         }
-                        project.add(staffEmployee);
-                    }
-                    else{
-                        partTimeEmployee = (PartTimeEmployee) employee;
-                        partTimeEmployee.setBonus(scanner.nextInt());
-                        project.add(partTimeEmployee);
+                        employeeGroup.add(staffEmployee);
+                    } else {
+                        partTimeEmployee = new PartTimeEmployee(scanner.nextLine(), scanner.nextLine(),
+                                JobTitleEnum.valueOf(scanner.nextLine()), scanner.nextInt());
+                        employeeGroup.add(partTimeEmployee);
                     }
                 }
-                employeeGroup = project;
             }
         }
-        catch (IOException e){
+        catch(FileNotFoundException e){
             e.printStackTrace();
-        }
-        catch (IllegalDatesException i){
-            i.printStackTrace();
         }
     }
 
@@ -119,15 +86,9 @@ public class GroupsManagerTextFileSource extends GroupsManagerFileSource {
             PrintWriter printWriter = new PrintWriter(file);
             printWriter.println(employeeGroup.getClass().getSimpleName());
             printWriter.println(employeeGroup.size());
-            Employee[] employees = employeeGroup.getEmployees();
-            StaffEmployee staffEmployee;
-            PartTimeEmployee partTimeEmployee;
-            BusinessTravel[] businessTravels;
             for (Employee emp : employeeGroup) {
                 printWriter.println(emp.getFullString());
-
             }
-
             printWriter.close();
         }
         catch (IOException e){
