@@ -399,7 +399,11 @@ public class DepartmentManager implements GroupsManager{
 
     @Override
     public void clear() {
+        for(int i = 0; i < size; i++){
+            this.groups[i] = null;
+        }
         this.groups = null;
+        this.size = 0;
     }
 
     @Override

@@ -7,11 +7,11 @@ import java.util.*;
 //todo свой список нада было использовать
 public class Project implements EmployeeGroup, Serializable{
     private String name;
-    private ArrayList<Employee> employeesList;
+    private LinkedList<Employee> employeesList;
     private int size;
 
     private static final String DEFAULT_NAME = "";
-    private static final ArrayList DEFAULT_EMPLOYEES_LIST = null;
+    private static final LinkedList DEFAULT_EMPLOYEES_LIST = null;
     private static final int DEFAULT_SIZE = 0;
 
     public Project(){

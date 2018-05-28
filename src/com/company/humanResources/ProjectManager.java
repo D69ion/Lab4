@@ -5,7 +5,7 @@ import java.util.*;
 
 //todo свой список надо было юзать
 public class ProjectManager implements GroupsManager{
-    private ArrayList<EmployeeGroup> groups;
+    private LinkedList<EmployeeGroup> groups;
     private int size;
 
     private static final int DEFAULT_SIZE = 0;

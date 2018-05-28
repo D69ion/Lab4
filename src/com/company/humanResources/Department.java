@@ -460,9 +460,8 @@ public class Department implements EmployeeGroup, Serializable{
     @Override
     public void clear() {
 	    //todo каждого сотрудника сначчала сделать null + не забывай о size
-        for (Employee employee: this.employees
-             ) {
-            employee = null;
+        for(int i = 0; i < size; i++){
+            this.employees[i] = null;
         }
         this.employees = null;
         this.size = 0;
