@@ -2,19 +2,19 @@ package com.company.humanResources;
 
 public abstract class EmployeeFactory {
 
-    static public EmployeeFactory getEmployeeFactory(OrdersFactoryTypesEnumeration type){
+    static public EmployeeFactory getEmployeeFactory(OrdersFactoryTypesEnumeration type, String path){
         switch (type){
             case ORDINARY_GROUPS_FACTORY:{
                 return new OrdinaryEmployeeFactory();
             }
             case TEXT_FILE_BASED_GROUPS_FACTORY:{
-                return new TextFileBasedEmployeeFactory();
+                return new TextFileBasedEmployeeFactory(path);
             }
             case BINARY_FILE_BASED_GROUPS_FACTORY:{
-                return new BinaryFileBasedEmployeeFactory();
+                return new BinaryFileBasedEmployeeFactory(path);
             }
             case SERIALIZED_FILE_BASED_GROUPS_FACTORY:{
-                return new SerializedFileBasedEmployeeFactory();
+                return new SerializedFileBasedEmployeeFactory(path);
             }
             case SOCKET_BASED_GROUPS_FACTORY:{
                 return null;

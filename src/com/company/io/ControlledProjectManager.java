@@ -7,15 +7,18 @@ import java.util.Collection;
 //todo вместо вызоыва конструктора в методах, используй фабрику, ссылку на которую будет принимать конструктор класса и запоминать ее в поле
 public class ControlledProjectManager extends ProjectManager {
     protected Source<EmployeeGroup> employeeGroupSource;
+    private EmployeeFactory factory;
 
     private static Source<EmployeeGroup> DEFAULT_EMPLOYEE_GROUP_SOURCE = null;
 
-    public ControlledProjectManager(){
+    public ControlledProjectManager(EmployeeFactory factory){
         super();
+        this.factory = factory;
     }
 
-    public ControlledProjectManager(EmployeeGroup[] employeeGroups){
+    public ControlledProjectManager(EmployeeGroup[] employeeGroups, EmployeeFactory factory){
         super(employeeGroups);
+        this.factory = factory;
     }
 
     public Source<EmployeeGroup> getEmployeeGroupSource() {
@@ -27,19 +30,13 @@ public class ControlledProjectManager extends ProjectManager {
     }
     @Override
     public boolean add(EmployeeGroup employeeGroup) {
-        return employeeGroupSource.create(new ControlledProject(employeeGroup.getName(), employeeGroup.getEmployees())) &&
+        return employeeGroupSource.create(factory.createProject(employeeGroup.getName(), (Employee[]) employeeGroup.toArray())) &&
                 super.add(employeeGroup);
     }
 
     @Override
-    public void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException {
-        employeeGroupSource.create(new ControlledProject(employeeGroup.getName(), employeeGroup.getEmployees()));
-        super.addGroup(employeeGroup);
-    }
-
-    @Override
     public void add(int index, EmployeeGroup element) {
-        employeeGroupSource.create(new ControlledProject(element.getName(), element.getEmployees()));
+        employeeGroupSource.create(factory.createProject(element.getName(), (Employee[]) element.toArray()));
         super.add(index, element);
     }
 
@@ -80,13 +77,6 @@ public class ControlledProjectManager extends ProjectManager {
     }
 
     @Override
-    public int removeGroup(EmployeeGroup project) {
-        if(employeeGroupSource.delete(project))
-            return super.removeGroup(project);
-        return 0;
-    }
-
-    @Override
     public boolean removeAll(Collection<?> c) {
         EmployeeGroup[] employeeGroups = (EmployeeGroup[]) c.toArray();
         for(int i = 0; i < employeeGroups.length; i++){
@@ -101,7 +91,7 @@ public class ControlledProjectManager extends ProjectManager {
         EmployeeGroup[] employeeGroup = (EmployeeGroup[]) c.toArray();
         for(int i = 0 ; i < employeeGroup.length; i++){
             if(!contains(employeeGroup[i])){
-                removeGroup(employeeGroup[i]);
+                remove(employeeGroup[i]);
             }
         }
         return true;
@@ -110,17 +100,17 @@ public class ControlledProjectManager extends ProjectManager {
     @Override
     public EmployeeGroup set(int index, EmployeeGroup element) {
         employeeGroupSource.delete(get(index));
-        employeeGroupSource.create(new ControlledDepartment(element.getName(), element.getEmployees()));
+        employeeGroupSource.create(factory.createProject(element.getName(), (Employee[]) element.toArray()));
         return super.set(index, element);
     }
 
     public void store(){
-        EmployeeGroup[] employeeGroups = super.getGroups();
-        ControlledDepartment controlledDepartment;
+        EmployeeGroup[] employeeGroups = (EmployeeGroup[]) super.toArray();
+        ControlledProject controlledProject;
         for(int i = 0; i < super.size(); i++){
-            if(employeeGroups[i] instanceof ControlledDepartment){
-                controlledDepartment = (ControlledDepartment) employeeGroups[i];
-                if(controlledDepartment.isChanged){
+            if(employeeGroups[i] instanceof ControlledProject){
+                controlledProject = (ControlledProject) employeeGroups[i];
+                if(controlledProject.isChanged){
                     employeeGroupSource.store(employeeGroups[i]);
                 }
             }
@@ -128,7 +118,7 @@ public class ControlledProjectManager extends ProjectManager {
     }
 
     public void load(){
-        EmployeeGroup[] employeeGroups = super.getGroups();
+        EmployeeGroup[] employeeGroups = (EmployeeGroup[]) super.toArray();
         for(int i = 0; i < super.size(); i++){
             employeeGroupSource.load(employeeGroups[i]);
         }

@@ -7,27 +7,32 @@ import java.util.Collection;
 //todo вместо вызоыва конструктора в методах, используй фабрику, ссылку на которую будет принимать конструктор класса и запоминать ее в поле
 public class ControlledDepartmentManager extends DepartmentManager {
     protected Source<EmployeeGroup> employeeGroupSource;
+    private EmployeeFactory factory;
 
     private static Source<EmployeeGroup> DEFAULT_EMPLOYEE_GROUP_SOURCE = null;
 
-    public ControlledDepartmentManager(){
+    public ControlledDepartmentManager(EmployeeFactory factory){
         super();
         employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
+        this.factory = factory;
     }
 
-    public ControlledDepartmentManager(String name){
+    public ControlledDepartmentManager(String name, EmployeeFactory factory){
         super(name);
         employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
+        this.factory = factory;
     }
 
-    public ControlledDepartmentManager(String name, int size){
+    public ControlledDepartmentManager(String name, int size, EmployeeFactory factory){
         super(name, size);
         employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
+        this.factory = factory;
     }
 
-    public ControlledDepartmentManager(String name, Department[] groups){
+    public ControlledDepartmentManager(String name, Department[] groups, EmployeeFactory factory){
         super(name, groups);
         employeeGroupSource = DEFAULT_EMPLOYEE_GROUP_SOURCE;
+        this.factory = factory;
     }
 
     public Source<EmployeeGroup> getEmployeeGroupSource() {
@@ -40,19 +45,13 @@ public class ControlledDepartmentManager extends DepartmentManager {
 
     @Override
     public boolean add(EmployeeGroup employeeGroup) {
-        return employeeGroupSource.create(new ControlledDepartment(employeeGroup.getName(), employeeGroup.getEmployees())) &&
+        return employeeGroupSource.create(factory.createDepartment(employeeGroup.getName(), (Employee[]) employeeGroup.toArray())) &&
                 super.add(employeeGroup);
     }
 
     @Override
-    public void addGroup(EmployeeGroup employeeGroup) throws AlreadyAddedException {
-        employeeGroupSource.create(new ControlledDepartment(employeeGroup.getName(), employeeGroup.getEmployees()));
-        super.addGroup(employeeGroup);
-    }
-
-    @Override
     public void add(int index, EmployeeGroup element) {
-        employeeGroupSource.create(new ControlledDepartment(element.getName(), element.getEmployees()));
+        employeeGroupSource.create(factory.createDepartment(element.getName(), (Employee[]) element.toArray()));
         super.add(index, element);
     }
 
@@ -93,13 +92,6 @@ public class ControlledDepartmentManager extends DepartmentManager {
     }
 
     @Override
-    public int removeGroup(EmployeeGroup department) {
-        if(employeeGroupSource.delete(department))
-            return super.removeGroup(department);
-        return 0;
-    }
-
-    @Override
     public boolean removeAll(Collection<?> c) {
         EmployeeGroup[] employeeGroups = (EmployeeGroup[]) c.toArray();
         for(int i = 0; i < employeeGroups.length; i++){
@@ -114,7 +106,7 @@ public class ControlledDepartmentManager extends DepartmentManager {
         EmployeeGroup[] employeeGroup = (EmployeeGroup[]) c.toArray();
         for(int i = 0 ; i < employeeGroup.length; i++){
             if(!contains(employeeGroup[i])){
-                removeGroup(employeeGroup[i]);
+                remove(employeeGroup[i]);
             }
         }
         return true;
@@ -123,12 +115,12 @@ public class ControlledDepartmentManager extends DepartmentManager {
     @Override
     public EmployeeGroup set(int index, EmployeeGroup element) {
         employeeGroupSource.delete(get(index));
-        employeeGroupSource.create(new ControlledDepartment(element.getName(), element.getEmployees()));
+        employeeGroupSource.create(factory.createDepartment(element.getName(), (Employee[]) element.toArray()));
         return super.set(index, element);
     }
 
     public void store(){
-        EmployeeGroup[] employeeGroups = super.getGroups();
+        EmployeeGroup[] employeeGroups = (EmployeeGroup[]) super.toArray();
         ControlledDepartment controlledDepartment;
         for(int i = 0; i < super.getSize(); i++){
             if(employeeGroups[i] instanceof ControlledDepartment){
@@ -141,7 +133,7 @@ public class ControlledDepartmentManager extends DepartmentManager {
     }
 
     public EmployeeGroup[] load(){
-        EmployeeGroup[] employeeGroups = super.getGroups();
+        EmployeeGroup[] employeeGroups = (EmployeeGroup[]) super.toArray();
         for(int i = 0; i < getSize(); i++){
             employeeGroupSource.load(employeeGroups[i]);
         }

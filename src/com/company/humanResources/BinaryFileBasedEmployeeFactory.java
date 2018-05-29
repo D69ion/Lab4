@@ -4,9 +4,11 @@ import com.company.io.*;
 
 public class BinaryFileBasedEmployeeFactory extends EmployeeFactory {
     private GroupsManagerBinaryFileSource binaryFileSource;
+    private EmployeeFactory factory;
 
-    public BinaryFileBasedEmployeeFactory(String path){
+    public BinaryFileBasedEmployeeFactory(String path, EmployeeFactory factory){
         binaryFileSource = new GroupsManagerBinaryFileSource(path);
+        this.factory = factory;
     }
 
     public String getPath(){
@@ -68,7 +70,7 @@ public class BinaryFileBasedEmployeeFactory extends EmployeeFactory {
 
     @Override
     public GroupsManager createDepartmentManager() {
-        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager();
+        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager(factory);
         for(int i = 0; i < controlledDepartmentManager.size(); i++){
             binaryFileSource.create(controlledDepartmentManager.get(i));
         }
@@ -77,7 +79,7 @@ public class BinaryFileBasedEmployeeFactory extends EmployeeFactory {
 
     @Override
     public GroupsManager createDepartmentManager(String name) {
-        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager(name);
+        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager(name, factory);
         for(int i = 0; i < controlledDepartmentManager.size(); i++){
             binaryFileSource.create(controlledDepartmentManager.get(i));
         }
@@ -86,7 +88,7 @@ public class BinaryFileBasedEmployeeFactory extends EmployeeFactory {
 
     @Override
     public GroupsManager createDepartmentManager(String name, int size) {
-        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager(name, size);
+        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager(name, size, factory);
         for(int i = 0; i < controlledDepartmentManager.size(); i++){
             binaryFileSource.create(controlledDepartmentManager.get(i));
         }
@@ -95,7 +97,7 @@ public class BinaryFileBasedEmployeeFactory extends EmployeeFactory {
 
     @Override
     public GroupsManager createDepartmentManager(String name, Department[] groups) {
-        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager(name, groups);
+        ControlledDepartmentManager controlledDepartmentManager = new ControlledDepartmentManager(name, groups, factory);
         for(int i = 0; i < controlledDepartmentManager.size(); i++){
             binaryFileSource.create(controlledDepartmentManager.get(i));
         }
@@ -104,7 +106,7 @@ public class BinaryFileBasedEmployeeFactory extends EmployeeFactory {
 
     @Override
     public GroupsManager createProjectManager() {
-        ControlledProjectManager controlledProjectManager = new ControlledProjectManager();
+        ControlledProjectManager controlledProjectManager = new ControlledProjectManager(factory);
         for(int i = 0; i < controlledProjectManager.size(); i++){
             binaryFileSource.create(controlledProjectManager.get(i));
         }
@@ -113,7 +115,7 @@ public class BinaryFileBasedEmployeeFactory extends EmployeeFactory {
 
     @Override
     public GroupsManager createProjectManager(EmployeeGroup[] employeeGroups) {
-        ControlledProjectManager controlledProjectManager = new ControlledProjectManager(employeeGroups);
+        ControlledProjectManager controlledProjectManager = new ControlledProjectManager(employeeGroups, factory);
         for(int i = 0; i < controlledProjectManager.size(); i++){
             binaryFileSource.create(controlledProjectManager.get(i));
         }
